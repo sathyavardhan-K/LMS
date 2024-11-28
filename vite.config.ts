@@ -5,9 +5,15 @@ import path from 'path'; // Add this import
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    proxy: {
+      "/auth": "http://localhost:5050",
+    },
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
 })
+

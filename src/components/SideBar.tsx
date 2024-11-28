@@ -4,19 +4,11 @@ import { Link } from "react-router-dom";
 
 const Sidebar: React.FC = () => {
   return (
-    <div className="flex h-screen bg-gray-700 text-gray-200">
+    <>
+      <div className="flex h-screen bg-gray-700 text-gray-200">
       {/* Sidebar */}
       <div className="flex flex-col w-64 bg-gray-800">
         {/* Header */}
-        <Link to='/'>
-            <div className="flex items-center justify-between p-4 border-b border-gray-600">
-              <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold">
-                  <span className="text-yellow-400">✮✮</span> LMS Admin <span className="text-yellow-400">✮✮</span>
-                </h1>
-              </div>
-            </div>
-        </Link>
         
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-4">
@@ -29,6 +21,8 @@ const Sidebar: React.FC = () => {
         </nav>
       </div>
     </div>
+    </>
+    
   );
 };
 
