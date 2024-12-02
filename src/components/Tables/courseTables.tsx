@@ -163,7 +163,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
 
 
       {/* Ag-Grid Table */}
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "74%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "76%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection

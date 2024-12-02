@@ -31,14 +31,14 @@ const AddUser = () => {
     toast.success("User added successfully!");
 
     if (newUser.role === "Admin") {
-      navigate("/admin", { state: { user: userData } });
+      navigate("/allUsers/admin", { state: { user: userData } });
     } else if (newUser.role === "Finance") {
-      navigate("/finance", { state: { user: userData } });
+      navigate("/allUsers//finance", { state: { user: userData } });
     } else if (newUser.role === "Trainer") {
-      navigate("/trainers", { state: { user: userData } });
+      navigate("/allUsers/trainers", { state: { user: userData } });
     } else {
       // Handle role-based navigation here, or just close the modal
-      navigate("/trainees", { state: { user: userData } });
+      navigate("/allUsers/trainees", { state: { user: userData } });
     }
   };
 
@@ -181,7 +181,7 @@ const AddUser = () => {
             </div>
           </div>
           <div className="flex justify-end space-x-2 mt-4">
-            <Button onClick={() => navigate("/")} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">
+            <Button onClick={() => navigate("/allUsers")} className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">
               Cancel
             </Button>
             <Button onClick={handleFormSubmit} className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">

@@ -37,15 +37,15 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated, userName
 
   return (
     <div className="bg-gray-900 p-4 shadow-lg">
-      <div className="flex justify-between items-center max-w-screen-xl mx-auto">
+      <div className="flex justify-between items-center max-w-screen-xxl">
         {/* Logo and Branding */}
-        <Link to="/" className="text-white text-2xl font-bold flex -ml-[80px] gap-2">
+        <Link to="/" className="text-white text-2xl font-bold">
           <span className="text-yellow-400">✮✮</span> LMS Admin <span className="text-yellow-400">✮✮</span>
         </Link>
 
         {/* Centered Search Bar */}
-        <div className="hidden md:flex items-center flex-1 mx-5">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
+        <div className="hidden md:flex items-center">
+          <form onSubmit={handleSearchSubmit} className="relative w-[450px]">
             <input
               type="text"
               value={searchQuery}

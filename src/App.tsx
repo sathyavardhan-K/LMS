@@ -15,6 +15,8 @@ import FinanceTable from './components/Tables/financeTables';
 import TrainerTable from './components/Tables/trainerTables';
 import AddUser from './components/Tables/addUser';
 
+import AllUsers from './components/Tables/allUsers';
+
 import { Toaster } from 'sonner';
 
 const App: React.FC = () => {
@@ -91,11 +93,15 @@ const App: React.FC = () => {
             {/* Nested routes */}
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<CourseTable />} />
-            <Route path="trainees" element={<UserTable />} />
-            <Route path="admin" element={<AdminTable />} />
-            <Route path="finance" element={<FinanceTable />} />
-            <Route path="trainers" element={<TrainerTable />} />
-            <Route path="add-user" element={<AddUser />} />
+            
+
+            <Route path="allUsers/" element={<AllUsers/>}>
+                <Route path="trainees" element={<UserTable />} />
+                <Route path="admin" element={<AdminTable />} />
+                <Route path="finance" element={<FinanceTable />} />
+                <Route path="trainers" element={<TrainerTable />} />
+                <Route path="add-user" element={<AddUser />} />
+            </Route>
           </Route>
 
           {/* Login Route */}

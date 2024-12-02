@@ -184,7 +184,7 @@ const TraineePage = () => {
   };
 
   return (
-    <div className="flex-1 p-4 mt-10 ml-10">
+    <div className="flex-1 p-4 mt-5 ml-7 w-[1200px]">
       <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6">
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Trainee Management</h2>
