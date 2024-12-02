@@ -16,6 +16,7 @@ import TrainerTable from './components/Tables/trainerTables';
 import AddUser from './components/Tables/addUser';
 
 import AllUsers from './components/Tables/allUsers';
+import CourseCategoryTable from './components/Tables/courseCategory';
 
 import { Toaster } from 'sonner';
 
@@ -93,6 +94,7 @@ const App: React.FC = () => {
             {/* Nested routes */}
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<CourseTable />} />
+            <Route path= "course-category" element={<CourseCategoryTable/>}/>
             
 
             <Route path="allUsers/" element={<AllUsers/>}>
@@ -101,6 +103,7 @@ const App: React.FC = () => {
                 <Route path="finance" element={<FinanceTable />} />
                 <Route path="trainers" element={<TrainerTable />} />
                 <Route path="add-user" element={<AddUser />} />
+                
             </Route>
           </Route>
 

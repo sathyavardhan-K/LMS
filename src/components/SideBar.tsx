@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users, Grid, Shield, ChevronDown, ChevronUp } from "lucide-react";
+import { Users, Grid, Shield, ChevronDown, ChevronUp, Layers } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar: React.FC = () => {
@@ -65,6 +65,15 @@ const Sidebar: React.FC = () => {
                 to="/allUsers"
                 isActive={location.pathname === "/allUsers"}
               />
+
+              {/* New Sidebar Button for Course Category */}
+              <SidebarButton
+                icon={<Layers />}
+                label="Course Category"
+                to="/course-category"
+                isActive={location.pathname === "/course-category"}
+              />
+
             </div>
           )}
         </nav>

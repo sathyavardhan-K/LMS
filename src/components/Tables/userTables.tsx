@@ -1,25 +1,36 @@
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import { useEffect, useState } from "react";
+import { ColDef } from "ag-grid-community";
 import { toast } from "react-toastify";
 import { Edit, Trash } from "lucide-react";
 import { Button } from "../../components/ui/button";
 
+// Define a type for the trainee user
+interface User {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  dob: string;
+  phone: string;
+  qualification: string;
+  dateOfJoining: string;
+  accountStatus: string;
+  role: string;
+  lastLogin: string;
+}
+
 // TraineePage component
-const TraineePage = () => {
+const TraineePage: React.FC = () => {
   const location = useLocation();
-  
-  // Access the user data passed from TraineeTable
-  const user = location.state?.user; 
+  const user = location.state?.user as User | undefined;
 
-  
-
-  // State for modal, editing, and new user data
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [newUser, setNewUser] = useState({
+  const [newUser, setNewUser] = useState<User>({
     id: 0,
     firstName: "",
     lastName: "",
@@ -29,11 +40,11 @@ const TraineePage = () => {
     qualification: "",
     dateOfJoining: "",
     accountStatus: "Active",
-    role: "Trainee", // Changed to Trainee
+    role: "Trainee",
     lastLogin: "",
   });
 
-  const [userData, setUserData] = useState([
+  const [userData, setUserData] = useState<User[]>([
     {
       id: 1,
       firstName: "Alex",
@@ -62,8 +73,26 @@ const TraineePage = () => {
     },
   ]);
 
+  // Update the userData when a new user is passed from location
+  useEffect(() => {
+    if (user) {
+      setUserData((prevData) => {
+        const existingUserIndex = prevData.findIndex(
+          (existingUser) => existingUser.id === user.id
+        );
+        if (existingUserIndex > -1) {
+          const updatedData = [...prevData];
+          updatedData[existingUserIndex] = user;
+          return updatedData;
+        } else {
+          return [...prevData, user];
+        }
+      });
+    }
+  }, [user]);
+
   // Column Definitions for AgGridReact
-  const colDefs = [
+  const colDefs: ColDef[] = [
     { headerName: "First Name", field: "firstName" },
     { headerName: "Last Name", field: "lastName" },
     { headerName: "Email", field: "email" },
@@ -76,55 +105,32 @@ const TraineePage = () => {
     { headerName: "Last Login", field: "lastLogin" },
     {
       headerName: "Actions",
-      editable:false,
+      editable: false,
       field: "actions",
-      cellRenderer: (params: any) => (
-        <div className="flex space-x-2">
-          <Button
-            onClick={() => editUser(params)}
-            className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
-          >
-            <Edit className="h-5 w-5" />
-          </Button>
-          <Button
-            onClick={() => deleteUser(params)}
-            className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
-          >
-            <Trash className="h-5 w-5" />
-          </Button>
-        </div>
-      ),
+      cellRenderer: (params: { data: any; }) => {
+        const { data } = params;
+        return (
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => editUser(data)}
+              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+            >
+              <Edit className="h-5 w-5" />
+            </Button>
+            <Button
+              onClick={() => deleteUser(data)}
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
+            >
+              <Trash className="h-5 w-5" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
-  const rowData = user ? [...userData, user] : userData;
-
-  // Update the userData when a new user is passed from location
-  useEffect(() => {
-    if (user) {
-      // Check if user exists and update or add the user
-      setUserData((prevData) => {
-        const existingUserIndex = prevData.findIndex(
-          (existingUser) => existingUser.id === user.id
-        );
-        if (existingUserIndex > -1) {
-          // If user exists, replace with updated user
-          const updatedData = [...prevData];
-          updatedData[existingUserIndex] = user;
-          return updatedData;
-        } else {
-          // If it's a new user, add to the list
-          return [...prevData, user];
-        }
-      });
-    }
-  }, [user]);
-  
-
   // Edit User function
-  const editUser = (params: any) => {
-    const userToEdit = userData.find((user) => user.id === params.data.id);
-    console.log(userToEdit);
+  const editUser = (userToEdit: User) => {
     if (userToEdit) {
       setEditing(true);
       setNewUser(userToEdit);
@@ -132,17 +138,11 @@ const TraineePage = () => {
     }
   };
 
-  const deleteUser = (params: any) => {
-    const userIdToDelete = params.data.id;
-    console.log("Deleting user with id:", userIdToDelete); // Check if this logs the correct user ID
-
-    // Delete the user from userData
-    setUserData((prev) => {
-      const updatedData = prev.filter((user) => user.id !== userIdToDelete);
-      console.log("Updated data after deletion:", updatedData); // Check if the user is correctly removed
-      toast.success("Trainee deleted successfully!");
-      return updatedData;
-    });
+  // Delete User function
+  const deleteUser = (userToDelete: User) => {
+    const userIdToDelete = userToDelete.id;
+    setUserData((prev) => prev.filter((user) => user.id !== userIdToDelete));
+    toast.success("Trainee deleted successfully!");
   };
 
   // Modal Close Handler
@@ -158,7 +158,7 @@ const TraineePage = () => {
       qualification: "",
       dateOfJoining: "",
       accountStatus: "Active",
-      role: "Trainee", // Ensure the role is set as "Trainee"
+      role: "Trainee",
       lastLogin: "",
     });
   };
@@ -166,20 +166,17 @@ const TraineePage = () => {
   // Form Submit Handler
   const handleFormSubmit = () => {
     if (editing) {
-      // Update existing user
       setUserData((prev) =>
         prev.map((user) => (user.id === newUser.id ? newUser : user))
       );
       toast.success("Trainee updated successfully!");
     } else {
-      // Add new user
       setUserData((prev) => [
         ...prev,
         { ...newUser, id: Date.now() },
       ]);
       toast.success("Trainee added successfully!");
     }
-
     handleModalClose();
   };
 
@@ -189,8 +186,7 @@ const TraineePage = () => {
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Trainee Management</h2>
           <p className="text-sm font-light">
-            Easily manage your trainees. Edit, or delete trainee records with
-            ease.
+            Easily manage your trainees. Edit, or delete trainee records with ease.
           </p>
         </div>
       </div>
@@ -205,7 +201,7 @@ const TraineePage = () => {
           suppressMovableColumns
           loading={false}
           columnDefs={colDefs}
-          rowData={userData} // Use userData here directly
+          rowData={userData}
           defaultColDef={{
             editable: true,
             sortable: true,
@@ -216,7 +212,6 @@ const TraineePage = () => {
         />
       </div>
 
-      {/* Modal for Editing or Adding Trainee */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
@@ -225,7 +220,6 @@ const TraineePage = () => {
             </h2>
             <form>
               <div className="grid grid-cols-2 gap-4">
-                {/* Form Fields */}
                 <div>
                   <label className="block font-medium">First Name</label>
                   <input
@@ -288,7 +282,10 @@ const TraineePage = () => {
                     className="w-full border rounded p-2"
                     value={newUser.qualification}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, qualification: e.target.value })
+                      setNewUser({
+                        ...newUser,
+                        qualification: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -299,7 +296,10 @@ const TraineePage = () => {
                     className="w-full border rounded p-2"
                     value={newUser.dateOfJoining}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, dateOfJoining: e.target.value })
+                      setNewUser({
+                        ...newUser,
+                        dateOfJoining: e.target.value,
+                      })
                     }
                   />
                 </div>
@@ -309,29 +309,30 @@ const TraineePage = () => {
                     className="w-full border rounded p-2"
                     value={newUser.accountStatus}
                     onChange={(e) =>
-                      setNewUser({ ...newUser, accountStatus: e.target.value })
+                      setNewUser({
+                        ...newUser,
+                        accountStatus: e.target.value,
+                      })
                     }
                   >
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                   </select>
                 </div>
-                <div className="col-span-2 text-center mt-4">
-                  <button
-                    type="button"
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={handleFormSubmit}
-                  >
-                    {editing ? "Update Trainee" : "Add Trainee"}
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-gray-500 text-white px-4 py-2 rounded ml-4 hover:bg-gray-700"
-                    onClick={handleModalClose}
-                  >
-                    Cancel
-                  </button>
-                </div>
+              </div>
+              <div className="flex justify-end mt-4 space-x-2">
+                <Button
+                  onClick={handleModalClose}
+                  className="bg-gray-400 text-white p-2 rounded hover:bg-gray-600"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleFormSubmit}
+                  className="bg-green-500 text-white p-2 rounded hover:bg-green-700"
+                >
+                  {editing ? "Update" : "Add"}
+                </Button>
               </div>
             </form>
           </div>
