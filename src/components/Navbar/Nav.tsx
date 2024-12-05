@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
-import Cookies from "js-cookie"; // Import js-cookie
 
 interface NavProps {
   isAuthenticated: boolean;
@@ -28,12 +27,12 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated, userName
   };
 
   const handleLogout = () => {
-    Cookies.remove('authToken'); // Clear the authentication token
-    Cookies.remove('userId'); // Clear the user ID
+    // Clear the authentication data from localStorage
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userId');
     setIsAuthenticated(false); // Update authentication state
     navigate('/login'); // Redirect to login
   };
-  
 
   return (
     <div className="bg-gray-900 p-4 shadow-lg">
@@ -67,10 +66,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated, userName
           {!isAuthenticated ? (
             <Link
               to="/login"
-              className="bg-blue-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-blue-700 transition duration-300"
-            >
-              Login
-            </Link>
+            />
           ) : (
             <>
               <span className="text-white font-medium">{`Welcome, ${userName}`}</span>

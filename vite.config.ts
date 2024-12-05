@@ -8,6 +8,10 @@ export default defineConfig({
   server: {
     proxy: {
       "/auth": "http://localhost:5050",
+      "/getcategory": "http://localhost:5050",
+      "/deletecategory": "http://localhost:5050",
+      "/updatecategory": "http://localhost:5050"
+      // "/createcourse-category": "http://localhost:5050"
     },
   },
   resolve: {
