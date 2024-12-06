@@ -5,6 +5,7 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
+import axios from "axios";
 
 // TypeScript types for the component props
 interface CourseTableProps {
@@ -15,74 +16,110 @@ interface CourseTableProps {
 interface CourseData {
   id: number;
   courseName: string;
-  syllabus: string;
-  duration: string;
-  category: string;
+  courseDesc: string;
+  courseCategoryId: number;
+  courseInstructorId: number;
 }
 
 // Column definitions type from AG-Grid
 import { ColDef } from "ag-grid-community";
 
-const courseCategoryOptions = ["Programming", "Fullstack", "Data Science", "Machine Learning", "Cloud Computing"];
+// Helper to get token
+const getToken = () => localStorage.getItem("authToken");
 
-// CourseTable component
 const CourseTable = ({ editable = true }: CourseTableProps) => {
   const [courseData, setCourseData] = useState<CourseData[]>([]);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editing, setEditing] = useState(false); // Tracks whether we're editing or adding a new course
+  const [editing, setEditing] = useState(false);
   const [newCourse, setNewCourse] = useState<CourseData>({
     id: 0,
     courseName: "",
-    syllabus: "",
-    duration: "1 Month",
-    category: courseCategoryOptions[0],
+    courseDesc: "",
+    courseCategoryId: 0,
+    courseInstructorId: 0,
   });
 
-  const fetchCoursesData = () => [
-    { id: 1, courseName: "Intro to Programming", syllabus: "Learn basics of programming", duration: "3 Months", category: "Programming" },
-    { id: 2, courseName: "Data Science 101", syllabus: "Introduction to data science", duration: "4 Months", category: "Data Science" },
-  ];
+  // Fetch courses
+  const fetchCourses = async () => {
+    const token = getToken();
+    if (!token) {
+      toast.error("You must be logged in to view courses.");
+      return;
+    }
 
-  const fetchData = async () => {
     try {
-      const courses = fetchCoursesData();
-      setCourseData(courses);
+      const response = await axios.get(`/getallcourse`);
+      console.log("Fetched courses:", response.data);
+      setCourseData(response.data.course || []);
     } catch (error) {
-      console.error("Failed to fetch course data", error);
+      console.error("Failed to fetch courses", error);
+      toast.error("Failed to fetch courses. Please try again later.");
     } finally {
       setLoading(false);
     }
   };
 
+  // Fetch categories
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/getcategory");
+      console.log('respp', response.data);
+      setCategories(response.data.categories || []);
+    } catch (error) {
+      console.error("Failed to fetch categories", error);
+      toast.error("Failed to fetch categories. Please try again later.");
+    }
+  };
+
   useEffect(() => {
-    fetchData();
+    fetchCourses();
+    fetchCategories();
   }, []);
 
   const addNewRow = () => {
-    setEditing(false); // Ensure we're not in editing mode
+    setEditing(false);
     setNewCourse({
       id: 0,
       courseName: "",
-      syllabus: "",
-      duration: "1 Month",
-      category: courseCategoryOptions[0],
+      courseDesc: "",
+      courseCategoryId: 0,
+      courseInstructorId: 0,
     });
     setIsModalOpen(true);
   };
 
-  const deleteCourse = (data: any) => {
-    setCourseData(prev => prev.filter(course => course.id !== data.data.id));
-    toast.success("Course deleted successfully!");
+  const deleteCourse = async (data: any) => {
+    const token = getToken();
+    if (!token) {
+      toast.error("You must be logged in to delete a course.");
+      return;
+    }
+
+    const courseId = data.data.id;
+    try {
+      await axios.delete(`/deletecourse/${courseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCourseData((prev) => prev.filter((course) => course.id !== courseId));
+      toast.success("Course deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete course", error);
+      toast.error("Failed to delete the course. Please try again later.");
+    }
   };
 
   const editCourse = (data: any) => {
-    const courseToEdit = courseData.find(course => course.id === data.data.id);
+    const courseToEdit = courseData.find((course) => course.id === data.data.id);
+    console.log("Course to edit:", courseToEdit);
     if (courseToEdit) {
-      setEditing(true); // Enable editing mode
-      setNewCourse(courseToEdit); // Pre-fill the form with the course details
-      setIsModalOpen(true); // Open the modal
+      setEditing(true);
+      setNewCourse(courseToEdit);
+      setIsModalOpen(true);
     }
   };
 
@@ -91,51 +128,90 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     setNewCourse({
       id: 0,
       courseName: "",
-      syllabus: "",
-      duration: "1 Month",
-      category: courseCategoryOptions[0],
+      courseDesc: "",
+      courseCategoryId: 0,
+      courseInstructorId: 0,
     });
   };
 
-  const handleFormSubmit = () => {
-    if (editing) {
-      // Update the existing course
-      setCourseData(prev =>
-        prev.map(course => (course.id === newCourse.id ? newCourse : course))
-      );
-      toast.success("Course updated successfully!");
-    } else {
-      // Add the new course
-      setCourseData(prev => [
-        ...prev,
-        { ...newCourse, id: Date.now() }, // Generate a unique ID
-      ]);
-      toast.success("Course added successfully!");
+  const handleFormSubmit = async () => {
+    const token = getToken();
+    console.log('token', token);
+    
+    if (!token) {
+      toast.error("You must be logged in to perform this action.");
+      return;
     }
+
+    if (editing) {
+      if (!newCourse.id) {
+        console.error("Course ID is missing for update.");
+        toast.error("Course ID is missing.");
+        return;
+      }
+
+      try {
+        const response = await axios.put(`/updatecourse/${newCourse.id}`, newCourse, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const updatedCourse = response.data;
+        setCourseData((prev) =>
+          prev.map((course) =>
+            course.id === newCourse.id ? updatedCourse : course
+          )
+        );
+
+        toast.success("Course updated successfully!");
+      } catch (error) {
+        console.error("Failed to update course", error);
+        toast.error("Failed to update the course. Please try again later.");
+      }
+    } else {
+      try {
+        const response = await axios.post(`/createcourse`, newCourse, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log('response', response);
+        const newCourseData = response.data;
+        setCourseData((prev) => [...prev, newCourseData]);
+        toast.success("Course added successfully!");
+      } catch (error) {
+        console.error("Failed to add course", error);
+        toast.error("Failed to add the course. Please try again later.");
+      }
+    }
+
+    await fetchCourses();
     handleModalClose();
   };
 
   useEffect(() => {
     setColDefs([
-      { headerName: "Course Name", field: "courseName", editable: true },
-      { headerName: "Syllabus", field: "syllabus", editable: true },
-      { headerName: "Duration", field: "duration", editable: true },
-      {
-        headerName: "Category",
-        field: "category",
-        editable: true,
-        cellEditorPopup: true,
-        cellEditorSelector: () => ({ component: "agSelectCellEditor", params: { values: courseCategoryOptions } }),
-      },
+      { headerName: "Course Name", field: "courseName", editable: false },
+      { headerName: "Description", field: "courseDesc", editable: false, width: 450 },
+      { headerName: "Category ID", field: "courseCategoryId", editable: false, width: 180 },
+      { headerName: "Instructor ID", field: "courseInstructorId", editable: false, width: 180 },
       {
         headerName: "Actions",
         field: "actions",
         cellRenderer: (params: any) => (
           <div className="flex space-x-2">
-            <Button onClick={() => editCourse(params)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">
+            <Button
+              onClick={() => editCourse(params)}
+              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+            >
               <Edit className="h-5 w-5" />
             </Button>
-            <Button onClick={() => deleteCourse(params)} className="bg-red-500 text-white p-2 rounded hover:bg-red-700">
+            <Button
+              onClick={() => deleteCourse(params)}
+              className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
+            >
               <Trash className="h-5 w-5" />
             </Button>
           </div>
@@ -147,11 +223,10 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
 
   return (
     <div className="flex-1 p-4 mt-10 ml-10">
-      {/* Table header */}
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[950px]">
+      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1115px]">
         <div className="flex flex-col">
-          <h2 className="text-2xl font-bold tracking-wide">Course Management</h2>
-          <p className="text-sm font-light">Easily manage your courses. Add, edit, or delete courses with ease.</p>
+          <h2 className="text-2xl font-bold tracking-wide">Courses</h2>
+          <p className="text-sm font-light">Manage courses easily.</p>
         </div>
         <Button
           onClick={addNewRow}
@@ -161,9 +236,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         </Button>
       </div>
 
-
-      {/* Ag-Grid Table */}
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "76%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "89%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection
@@ -176,8 +249,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         />
       </div>
 
-
-      {/* Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -189,47 +260,55 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                   type="text"
                   className="w-full border rounded p-2"
                   value={newCourse.courseName}
-                  onChange={e => setNewCourse({ ...newCourse, courseName: e.target.value })}
+                  onChange={(e) => setNewCourse({ ...newCourse, courseName: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Syllabus</label>
+                <label className="block font-medium">Description</label>
                 <input
                   type="text"
                   className="w-full border rounded p-2"
-                  value={newCourse.syllabus}
-                  onChange={e => setNewCourse({ ...newCourse, syllabus: e.target.value })}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block font-medium">Duration</label>
-                <input
-                  type="text"
-                  className="w-full border rounded p-2"
-                  value={newCourse.duration}
-                  onChange={e => setNewCourse({ ...newCourse, duration: e.target.value })}
+                  value={newCourse.courseDesc}
+                  onChange={(e) => setNewCourse({ ...newCourse, courseDesc: e.target.value })}
                 />
               </div>
               <div className="mb-4">
                 <label className="block font-medium">Category</label>
                 <select
                   className="w-full border rounded p-2"
-                  value={newCourse.category}
-                  onChange={e => setNewCourse({ ...newCourse, category: e.target.value })}
+                  value={newCourse.courseCategoryId}
+                  onChange={(e) => setNewCourse({ ...newCourse, courseCategoryId: Number(e.target.value) })}
                 >
-                  {courseCategoryOptions.map(option => (
-                    <option key={option} value={option}>
-                      {option}
+                  <option value={0} className="text-black">Select Category</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.id}
                     </option>
                   ))}
+
                 </select>
               </div>
+              <div className="mb-4">
+                <label className="block font-medium">Instructor ID</label>
+                <input
+                  type="number"
+                  className="w-full border rounded p-2"
+                  value={newCourse.courseInstructorId}
+                  onChange={(e) => setNewCourse({ ...newCourse, courseInstructorId: Number(e.target.value) })}
+                />
+              </div>
               <div className="flex justify-end space-x-2">
-                <Button onClick={handleModalClose} className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700">
+                <Button
+                  onClick={handleModalClose}
+                  className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleFormSubmit} className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-700">
-                  Submit
+                <Button
+                  onClick={handleFormSubmit}
+                  className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-700"
+                >
+                  {editing ? "Update" : "Create"}
                 </Button>
               </div>
             </form>

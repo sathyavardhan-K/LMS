@@ -27,6 +27,8 @@ import { ColDef } from "ag-grid-community";
 // Helper to get token
 const getToken = () => localStorage.getItem("authToken");
 
+
+
 const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   const [categoryData, setCategoryData] = useState<CourseCategoryData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -50,6 +52,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
 
     try {
       const response = await axios.get(`/getcategory`);
+      console.log("Get course Categories", response.data);
       setCategoryData(response.data.categories || []);
     } catch (error) {
       console.error("Failed to fetch course categories", error);
@@ -116,6 +119,8 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     });
   };
 
+  console.log("Submitting Category 1: ", newCategory);
+
   const handleFormSubmit = async () => {
     const token = getToken();
     if (!token) {
@@ -140,13 +145,18 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
             Authorization: `Bearer ${token}`,
           },
         });
+
+         // Assuming the backend returns the updated category data
+        const updatedCategory = response.data; // assuming the response contains the updated category
+        console.log('updatedCategory',updatedCategory);
   
         // Assuming the backend returns the updated category data
         setCategoryData((prev) =>
           prev.map((category) =>
-            category.id === newCategory.id ? response.data : category
+            category.id === newCategory.id ? updatedCategory : category
           )
         );
+
         toast.success("Category updated successfully!");
       } catch (error) {
         console.error("Failed to update category", error);
@@ -159,22 +169,29 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCategoryData((prev) => [...prev, response.data]);
+
+        // Assuming the response returns the newly created category
+        const newCategoryData = response.data; // Assuming this is the new category from the API
+
+        setCategoryData((prev) => [...prev, newCategoryData]);
         toast.success("Category added successfully!");
       } catch (error) {
         console.error("Failed to add category", error);
         toast.error("Failed to add the category. Please try again later.");
       }
     }
+
+     // Refresh the component by fetching updated data
+    await fetchCourseCategory();
     handleModalClose();
   };
   
 
   useEffect(() => {
     setColDefs([
-      { headerName: "Category Name", field: "courseCategory", editable: true },
-      { headerName: "Description", field: "description", editable: true },
-      { headerName: "Image Path", field: "courseCategoryImg", editable: true },
+      { headerName: "Category Name", field: "courseCategory", editable: false },
+      { headerName: "Description", field: "description", editable: false, width: 450 },
+      { headerName: "Image Path", field: "courseCategoryImg", editable: false, width: 250 },
       {
         headerName: "Actions",
         field: "actions",
@@ -201,7 +218,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
 
   return (
     <div className="flex-1 p-4 mt-10 ml-10">
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[850px]">
+      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1115px]">
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Course Categories</h2>
           <p className="text-sm font-light">Manage course categories easily.</p>
@@ -214,7 +231,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
         </Button>
       </div>
 
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "68%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "89%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection

@@ -10,8 +10,15 @@ export default defineConfig({
       "/auth": "http://localhost:5050",
       "/getcategory": "http://localhost:5050",
       "/deletecategory": "http://localhost:5050",
-      "/updatecategory": "http://localhost:5050"
-      // "/createcourse-category": "http://localhost:5050"
+      "/updatecategory": "http://localhost:5050",
+      "/createcourse-category": "http://localhost:5050",
+      
+      "/createcourse": "http://localhost:5050",
+      "/getallcourse": "http://localhost:5050",
+      "/updatecourse": "http://localhost:5050",
+      "/deletecourse": "http://localhost:5050",
+
+      "/auth/roles": "http://localhost:5050"
     },
   },
   resolve: {

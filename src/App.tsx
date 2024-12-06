@@ -16,6 +16,9 @@ import AddUser from './components/Tables/addUser';
 
 import AllUsers from './components/Tables/allUsers';
 import CourseCategoryTable from './components/Tables/courseCategory';
+import ManageRoles from './components/Tables/rolesTables';
+import PermissionRoles from './components/Tables/permissionTables';
+import RolePermission from './components/Tables/rolePermission';
 
 import { Toaster } from 'sonner';
 
@@ -33,6 +36,9 @@ const App: React.FC = () => {
       const token = localStorage.getItem('authToken');
       const userId = localStorage.getItem('userId');
 
+      console.log("token", token);
+      console.log("userid", userId);
+
       if (token && userId) {
         try {
           const response = await axios.get(`/auth/userDetails/${userId}`, {
@@ -43,20 +49,17 @@ const App: React.FC = () => {
           console.log('API Response:', response);
 
           // Check if the response contains the user data
-          if (response.data && response.data.user) {
-            const user = response.data.user;
+          if (response.data && response.data.userDetails) {
+            const user = response.data.userDetails;
             const fullName = `${user.firstName} ${user.lastName}`;
 
             setIsAuthenticated(true);
             setUserName(fullName);
 
-            localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('userName', fullName);
-          } else {
-            console.error('User data not found in response:', response.data);
-            localStorage.clear();
-            setIsAuthenticated(false);
+            // localStorage.setItem('isAuthenticated', 'true');
+            // localStorage.setItem('userName', fullName);
           }
+          
         } catch (error) {
           console.error('Token validation failed:', error);
           localStorage.clear();
@@ -73,6 +76,8 @@ const App: React.FC = () => {
     return <div className="text-center mt-20">Loading...</div>;
   }
 
+  console.log('isauth',isAuthenticated);
+
   return (
     <>
       <Router>
@@ -81,6 +86,7 @@ const App: React.FC = () => {
           setIsAuthenticated={setIsAuthenticated}
           userName={userName}
         />
+
         <Routes>
           <Route
             path="/"
@@ -88,13 +94,16 @@ const App: React.FC = () => {
               isAuthenticated ? (
                 <Home isAuthenticated={isAuthenticated} />
               ) : (
-                <Navigate to="/login" replace />
+                <Navigate to="/login" replace/>
               )
             }
           >
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<CourseTable />} />
             <Route path="course-category" element={<CourseCategoryTable />} />
+            <Route path="manage-roles" element={<ManageRoles/>}/>
+            <Route path="manage-permissions" element={<PermissionRoles/>}/>
+            <Route path="manage-role-permission" element={<RolePermission/>}/>
             <Route path="allUsers/" element={<AllUsers />}>
               <Route path="trainees" element={<UserTable />} />
               <Route path="admin" element={<AdminTable />} />
