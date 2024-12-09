@@ -51,9 +51,9 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     }
 
     try {
-      const response = await axios.get(`/getcategory`);
+      const response = await axios.get(`/coursecategory`);
       console.log("Get course Categories", response.data);
-      setCategoryData(response.data.categories || []);
+      setCategoryData(response.data.category || []);
     } catch (error) {
       console.error("Failed to fetch course categories", error);
       toast.error("Failed to fetch course categories. Please try again later.");
@@ -86,7 +86,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
 
     const categoryId = data.data.id;
     try {
-      await axios.delete(`/deletecategory/${categoryId}`, {
+      await axios.delete(`/coursecategory/${categoryId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -119,7 +119,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     });
   };
 
-  console.log("Submitting Category 1: ", newCategory);
+  // console.log("Submitting Category 1: ", newCategory);
 
   const handleFormSubmit = async () => {
     const token = getToken();
@@ -140,7 +140,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       }
   
       try {
-        const response = await axios.put(`/updatecategory/${newCategory.id}`, newCategory, {
+        const response = await axios.put(`/coursecategory/${newCategory.id}`, newCategory, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -164,7 +164,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       }
     } else {
       try {
-        const response = await axios.post(`/createcourse-category`, newCategory, {
+        const response = await axios.post(`/coursecategory`, newCategory, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

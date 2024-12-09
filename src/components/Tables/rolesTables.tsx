@@ -36,6 +36,7 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
     name: "",
     description: "",
   });
+  
 
   // Fetch roles
   const fetchRoles = async () => {
@@ -46,13 +47,22 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
     }
 
     try {
-      const response = await axios.get(`/auth/roles`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            }
+      const response = await axios.get(`/roles`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       console.log("Fetched roles:", response.data);
-      setRoles(response.data.roles || []);
+
+      // Map and transform the roles data
+      const rolesData = response.data.map((role: any) => ({
+        id: role.id,
+        name: role.name,
+        description: role.description,
+      }));
+
+      setRoles(rolesData || []);
     } catch (error) {
       console.error("Failed to fetch roles", error);
       toast.error("Failed to fetch roles. Please try again later.");
@@ -84,7 +94,7 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
 
     const roleId = data.data.id;
     try {
-      await axios.delete(`/auth/roles/${roleId}`, {
+      await axios.delete(`/roles/${roleId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -132,7 +142,7 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
       }
 
       try {
-        const response = await axios.put(`/auth/roles/${newRole.id}`, newRole, {
+        const response = await axios.put(`/roles/${newRole.id}`, newRole, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -150,7 +160,7 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
       }
     } else {
       try {
-        const response = await axios.post(`/auth/roles`, newRole, {
+        const response = await axios.post(`/roles`, newRole, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -171,12 +181,12 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
 
   useEffect(() => {
     setColDefs([
-      { headerName: "Role Name", field: "name", editable: false, width: 150 },
-      { headerName: "Description", field: "description", editable: false, width: 500 },
+      { headerName: "Role Name", field: "name", editable: false, width: 200 },
+      { headerName: "Description", field: "description", editable: false, width: 200 },    
       {
         headerName: "Actions",
         field: "actions",
-        width: 200,
+        width: 250,
         cellRenderer: (params: any) => (
           <div className="flex space-x-2">
             <Button
@@ -249,6 +259,7 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
                   onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
                 />
               </div>
+       
               <div className="flex justify-end space-x-2">
                 <Button
                   onClick={handleModalClose}

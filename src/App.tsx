@@ -29,7 +29,7 @@ const App: React.FC = () => {
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('userName') || '');
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [userDetails, setUserDetails] = useState<string>(()=> localStorage.getItem('userDetails') || '');
+  const [user, setUser] = useState<string>(()=> localStorage.getItem('user') || '');
 
   useEffect(() => {
     const authenticateWithToken = async () => {
@@ -41,16 +41,17 @@ const App: React.FC = () => {
 
       if (token && userId) {
         try {
-          const response = await axios.get(`/auth/userDetails/${userId}`, {
+          const response = await axios.get(`/users/${userId}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
 
           // Check the full structure of the response
           console.log('API Response:', response);
+          console.log('respp', response.data.user);
 
           // Check if the response contains the user data
-          if (response.data && response.data.userDetails) {
-            const user = response.data.userDetails;
+          if (response.data && response.data.user) {
+            const user = response.data.user;
             const fullName = `${user.firstName} ${user.lastName}`;
 
             setIsAuthenticated(true);
@@ -68,6 +69,7 @@ const App: React.FC = () => {
       }
       setLoading(false);
     };
+    console.log('isauthenticate',isAuthenticated);
 
     authenticateWithToken();
   }, []);
