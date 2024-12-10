@@ -76,9 +76,9 @@ const Sidebar: React.FC = () => {
               {/* New Sidebar Button for Manage Roles */}
               <SidebarButton
                 icon={<Key />}
-                label="Manage Roles"
-                to="/manage-roles"
-                isActive={location.pathname === "/manage-roles"}
+                label="Manage Roles & Permissions"
+                to="/manage-roles-and-permissions"
+                isActive={location.pathname === "/manage-roles-and-permissions"}
               />
 
               <SidebarButton
@@ -88,12 +88,12 @@ const Sidebar: React.FC = () => {
                   isActive={location.pathname === "/manage-permissions"}
               />
 
-              <SidebarButton
+              {/* <SidebarButton
                   icon={<Ribbon/>}
                   label="Manage RolePermissions"
                   to="/manage-role-permission"
                   isActive={location.pathname === "/manage-role-permission"}
-              />
+              /> */}
 
             </div>
           )}

@@ -29,7 +29,6 @@ const App: React.FC = () => {
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('userName') || '');
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [user, setUser] = useState<string>(()=> localStorage.getItem('user') || '');
 
   useEffect(() => {
     const authenticateWithToken = async () => {
@@ -103,7 +102,7 @@ const App: React.FC = () => {
             <Route index element={<Dashboard />} />
             <Route path="courses" element={<CourseTable />} />
             <Route path="course-category" element={<CourseCategoryTable />} />
-            <Route path="manage-roles" element={<ManageRoles/>}/>
+            <Route path="manage-roles-and-permissions" element={<ManageRoles/>}/>
             <Route path="manage-permissions" element={<PermissionRoles/>}/>
             <Route path="manage-role-permission" element={<RolePermission/>}/>
             <Route path="allUsers/" element={<AllUsers />}>
