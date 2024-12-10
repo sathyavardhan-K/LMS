@@ -8,9 +8,9 @@ import Login from './components/Navbar/Login';
 import Nav from './components/Navbar/Nav';
 
 import CourseTable from './components/Tables/courseTables';
-import UserTable from './components/Tables/userTables';
+import UserTable from './components/Tables/traineeTables';
 import AdminTable from './components/Tables/adminTables';
-import FinanceTable from './components/Tables/financeTables';
+import FinanceTable from './components/Tables/salesTables';
 import TrainerTable from './components/Tables/trainerTables';
 import AddUser from './components/Tables/addUser';
 
@@ -106,10 +106,10 @@ const App: React.FC = () => {
             <Route path="manage-permissions" element={<PermissionRoles/>}/>
             <Route path="manage-role-permission" element={<RolePermission/>}/>
             <Route path="allUsers/" element={<AllUsers />}>
-              <Route path="trainees" element={<UserTable />} />
+              <Route path="trainee" element={<UserTable />} />
               <Route path="admin" element={<AdminTable />} />
-              <Route path="finance" element={<FinanceTable />} />
-              <Route path="trainers" element={<TrainerTable />} />
+              <Route path="sales" element={<FinanceTable />} />
+              <Route path="trainer" element={<TrainerTable />} />
               <Route path="add-user" element={<AddUser />} />
             </Route>
           </Route>

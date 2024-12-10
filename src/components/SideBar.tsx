@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users, Grid, Shield, ChevronDown, ChevronUp, Layers, Key, MountainSnow, Ribbon } from "lucide-react";
+import { Users, Grid, Shield, ChevronDown, ChevronUp, Layers, Key, MountainSnow } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar: React.FC = () => {

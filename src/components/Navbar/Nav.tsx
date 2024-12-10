@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
-import GWClogo from "../../images/gwc.svg";
 import GWClogoLight from '../../images/gwc_light.svg'
 
 interface NavProps {
