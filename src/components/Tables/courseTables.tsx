@@ -24,6 +24,16 @@ interface CourseData {
   courseInstructor: string;
 }
 
+interface courseOptions {
+  id: any;
+  courseCategory: any;
+}
+
+interface instructorOptions{
+  id: any;
+  fullName: any;
+}
+
 // Helper to get the token from local storage
 const getToken = () => localStorage.getItem("authToken");
 
@@ -33,6 +43,8 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [courseCategory, setCourseCategory] = useState<courseOptions[]>([]);
+  const [instructor, setInstructor] = useState<instructorOptions[]>([]);
   const [newCourse, setNewCourse] = useState<CourseData>({
     id: 0,
     courseName: "",
@@ -58,6 +70,8 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         },
       });
 
+      // console.log('course', response.data);
+
       const courses = response.data.course.map((course: any) => ({
         id: course.id,
         courseName: course.courseName,
@@ -69,6 +83,46 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         courseCategoryId: course.courseCategoryId || 0,
         courseInstructorId: course.courseInstructorId || 0,
       }));
+
+      console.log('courses', courses);
+
+      const responseCategory = await axios.get(`/coursecategory`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+
+        const courseCategory = responseCategory.data.category.map((category: any)=>({
+          id: category.id,
+          courseCategory: category.courseCategory
+        }));
+
+        console.log('courseCategory', courseCategory);
+        setCourseCategory(courseCategory);
+
+        const responseInstructor = await axios.get(`/users`,{
+          headers:{
+            Authorization: `Bearer ${token}`,
+          }
+        })
+        console.log('responseInstructor', responseInstructor.data);
+
+        const instructor = responseInstructor.data.Users
+        .filter((user: any) => {
+          return (
+            Array.isArray(user.role)
+              ? user.role.some((r: any) => r.name.toLowerCase() === 'trainer')
+              : user.role && user.role.name.toLowerCase() === 'trainer'
+          );
+        })
+        .map((user: any) => ({
+          fullName: `${user.firstName} ${user.lastName}`,
+          id: user.id,  // Ensure you also include an id field
+        }));
+
+      console.log('Filtered Instructor (Trainer only):', instructor);
+      setInstructor(instructor);
+
 
       setCourseData(courses);
     } catch (error) {
@@ -164,10 +218,12 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         await axios.put(`/course/${newCourse.id}`, courseToSubmit, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        fetchCourses();
         setCourseData((prev) =>
           prev.map((course) => (course.id === newCourse.id ? { ...course, ...courseToSubmit } : course))
         );
         toast.success("Course updated successfully!");
+
       } else {
         const response = await axios.post(`/course`, courseToSubmit, {
           headers: { Authorization: `Bearer ${token}` },
@@ -276,9 +332,9 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                   }
                 >
                   <option value="">Select Category</option>
-                  {uniqueCategories.map(([category, categoryId]) => (
-                    <option key={categoryId} value={categoryId}>
-                      {category}
+                  {courseCategory.map((category) => (
+                    <option key={category.courseCategory} value={category.id}>
+                      {category.courseCategory}
                     </option>
                   ))}
                 </select>
@@ -298,9 +354,9 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                   }
                 >
                   <option value="">Select Instructor</option>
-                  {uniqueInstructors.map(([instructor, instructorId]) => (
-                    <option key={instructorId} value={instructorId}>
-                      {instructor}
+                  {instructor.map((inst) => (
+                    <option key={inst.id} value={inst.id}>
+                      {inst.fullName}
                     </option>
                   ))}
                 </select>
