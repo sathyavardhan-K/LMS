@@ -117,7 +117,7 @@ const AllUsers: React.FC = () => {
         ))}
       </div>
 
-      <div className="mt-6 w-full">
+      <div className="mt-6 -ml-[100px] w-full">
         <Outlet />
       </div>
     </div>

@@ -27,6 +27,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
       const { accessToken, user } = response.data;
       const fullName = `${user.firstName} ${user.lastName}`;
       const userId = user.id; // Assuming `id` is the property for the user ID
+      const roleName = user.role;
+      // console.log("Role name", roleName);
 
       console.log('Access token:', accessToken);
 
@@ -34,6 +36,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
       localStorage.setItem('authToken', accessToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('userName', fullName);
+      localStorage.setItem('role', roleName);
 
       // Update authentication state and user name
       setIsAuthenticated(true);
@@ -41,6 +44,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
 
       // Redirect to home route
       navigate('/');
+
     } catch (err) {
       console.error('Login failed:', err);
       setError('Login failed. Please check your email and password.');

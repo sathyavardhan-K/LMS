@@ -217,7 +217,7 @@ const TrainerPage: React.FC = () => {
   };
   
   return (
-    <div className="flex-1 p-4 mt-5 ml-20 w-[1200px]">
+    <div className="flex-1 p-4 mt-5 w-[1200px] ml-20">
       <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6">
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Trainer Management</h2>

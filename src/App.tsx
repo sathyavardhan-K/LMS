@@ -20,6 +20,8 @@ import ManageRoles from './components/Tables/rolesTables';
 import PermissionRoles from './components/Tables/permissionTables';
 import RolePermission from './components/Tables/rolePermission';
 
+import ProtectedRoute from './components/protectedRoute';
+
 import { Toaster } from 'sonner';
 
 const App: React.FC = () => {
@@ -34,9 +36,11 @@ const App: React.FC = () => {
     const authenticateWithToken = async () => {
       const token = localStorage.getItem('authToken');
       const userId = localStorage.getItem('userId');
+      const roleName = localStorage.getItem('role');
 
       console.log("token", token);
       console.log("userid", userId);
+      console.log("Role Name", roleName);
 
       if (token && userId) {
         try {
@@ -118,6 +122,9 @@ const App: React.FC = () => {
             element={<Login setIsAuthenticated={setIsAuthenticated} setUserName={setUserName} />}
           />
         </Routes>
+
+
+        
       </Router>
       <Toaster />
     </>
