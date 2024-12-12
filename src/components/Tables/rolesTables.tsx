@@ -35,6 +35,8 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
   const [colDefs, setColDefs] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<RoleData | null>(null);
   const [newRole, setNewRole] = useState<RoleData>({
     id: 0,
     name: "",
@@ -131,25 +133,44 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
     setIsModalOpen(true);
   };
 
-  // Delete a role
-  const deleteRole = async (data: any) => {
+   // Function to open the delete confirmation modal
+   const confirmDeleteRole = (data: any) => {
+    const role = roles.find((role) => role.id === data.data.id);
+    if (role) {
+      setRoleToDelete(role);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  // Function to handle the actual deletion
+  const handleDeleteRole = async () => {
+    if (!roleToDelete) return;
+
     const token = getToken();
     if (!token) {
       toast.error("You must be logged in to delete a role.");
       return;
     }
 
-    const roleId = data.data.id;
     try {
-      await axios.delete(`/roles/${roleId}`, {
+      await axios.delete(`/roles/${roleToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setRoles((prev) => prev.filter((role) => role.id !== roleId));
+      setRoles((prev) => prev.filter((role) => role.id !== roleToDelete.id));
       toast.success("Role deleted successfully!");
     } catch (error) {
       console.error("Failed to delete role", error);
       toast.error("Failed to delete the role. Please try again later.");
+    } finally {
+      setIsDeleteModalOpen(false);
+      setRoleToDelete(null);
     }
+  };
+
+  // Cancel the deletion
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setRoleToDelete(null);
   };
 
   // Edit a role
@@ -257,7 +278,7 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
               <Edit className="h-5 w-5" />
             </Button>
             <Button
-              onClick={() => deleteRole(params)}
+              onClick={() => confirmDeleteRole(params)}
               className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
             >
               <Trash className="h-5 w-5" />
@@ -383,6 +404,30 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
           </div>
         </div>
       )}
+
+
+{isDeleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            <p>Are you sure you want to delete the role "{roleToDelete?.name}"?</p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button
+                onClick={handleCancelDelete}
+                className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteRole}
+                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}    
     </div>
   );
 };

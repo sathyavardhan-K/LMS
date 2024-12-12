@@ -55,37 +55,37 @@ const Sidebar: React.FC = () => {
               <SidebarButton
                 icon={<Grid />}
                 label="Courses"
-                to="/courses"
-                isActive={location.pathname === "/courses"}
+                to="/admin/courses"
+                isActive={location.pathname === "/admin/courses"}
               />
 
               <SidebarButton
                 icon={<Users />}
                 label="Users"
-                to="/allUsers"
-                isActive={location.pathname === "/allUsers"}
+                to="/admin/allUsers"
+                isActive={location.pathname === "/admin/allUsers"}
               />
 
               <SidebarButton
                 icon={<Layers />}
                 label="Course Category"
-                to="/course-category"
-                isActive={location.pathname === "/course-category"}
+                to="/admin/course-category"
+                isActive={location.pathname === "/admin/course-category"}
               />
 
               {/* New Sidebar Button for Manage Roles */}
               <SidebarButton
                 icon={<Key />}
                 label="Manage Roles & Permissions"
-                to="/manage-roles-and-permissions"
-                isActive={location.pathname === "/manage-roles-and-permissions"}
+                to="/admin/manage-roles-and-permissions"
+                isActive={location.pathname === "/admin/manage-roles-and-permissions"}
               />
 
               <SidebarButton
                   icon={<MountainSnow/>}
                   label="Manage Permissions"
-                  to="/manage-permissions"
-                  isActive={location.pathname === "/manage-permissions"}
+                  to="/admin/manage-permissions"
+                  isActive={location.pathname === "/admin/manage-permissions"}
               />
 
               {/* <SidebarButton

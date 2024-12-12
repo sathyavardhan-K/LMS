@@ -32,6 +32,8 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [permissionToDelete, setPermissionToDelete] = useState<PermissionData | null>(null);
   const [newPermission, setNewPermission] = useState<PermissionData>({
     id: 0,
     action: "",
@@ -79,27 +81,59 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
     setIsModalOpen(true);
   };
  
-  const deletePermission = async (data: any) => {
+  const deletePermission = async () => {
+    if (!permissionToDelete) {
+      toast.error("No permission selected for deletion.");
+      return;
+    }
+
     const token = getToken();
     if (!token) {
       toast.error("You must be logged in to delete a permission.");
       return;
     }
- 
-    const permissionaction = data.data.action;
+
     try {
-      await axios.delete(`/permissions/${permissionaction}`, {
+      await axios.delete(`/permissions/${permissionToDelete.action}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setPermissions((prev) => prev.filter((permission) => permission.action !== permissionaction));
+      setPermissions((prev) => prev.filter((permission) => permission.action !== permissionToDelete.action));
       toast.success("Permission deleted successfully!");
     } catch (error) {
       console.error("Failed to delete permission", error);
       toast.error("Failed to delete the permission. Please try again later.");
+    } finally {
+      setDeleteModalOpen(false);
+      setPermissionToDelete(null);
     }
   };
+
+
+  const confirmDelete = (params: any) => {
+    if (!params || !params.data) {
+      console.error("Invalid data passed to confirmDelete:", params);
+      toast.error("Permission not found.");
+      return;
+    }
+
+    const permission = permissions.find((perm) => perm.action === params.data.action);
+    if (permission) {
+      setPermissionToDelete(permission);
+      setDeleteModalOpen(true);
+    } else {
+      console.error("Permission not found for deletion.");
+      toast.error("Permission not found.");
+    }
+  };
+
+  
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setPermissionToDelete(null);
+  };
+
  
   const editPermission = (data: any) => {
     const permissionToEdit = permissions.find((permission) => permission.action === data.data.action);
@@ -195,7 +229,7 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
               <Edit className="h-5 w-5" />
             </Button>
             <Button
-              onClick={() => deletePermission(params)}
+              onClick={() => confirmDelete(params)}
               className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
             >
               <Trash className="h-5 w-5" />
@@ -285,6 +319,26 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
           </div>
         </div>
       )}
+
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
+            <p className="mb-4">
+              Are you sure you want to delete the permission <strong>{permissionToDelete?.action}</strong>?
+            </p>
+            <div className="flex justify-end space-x-2">
+              <Button onClick={closeDeleteModal} className="bg-gray-500 text-white px-3 py-2 rounded">
+                Cancel
+              </Button>
+              <Button onClick={deletePermission} className="bg-red-500 text-white px-3 py-2 rounded">
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
