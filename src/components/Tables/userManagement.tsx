@@ -65,7 +65,6 @@ const UserManagement: React.FC = () => {
             user.role.name.toLowerCase() === roleName.toLowerCase() // Filter by dynamic roleName
         );
         setUserData(filteredUsers);
-        console.log(`Filtered users for role ${roleName}:`, filteredUsers);
       } else {
         console.error("Unexpected data format:", userResponse.data);
         toast.error("Unexpected response format from the server.");
