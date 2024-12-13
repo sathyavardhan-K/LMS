@@ -97,7 +97,7 @@ const AllUsers: React.FC = () => {
         <h1 className="text-2xl font-bold text-gray-600">User Roles</h1>
         <button
           className="flex items-center px-4 py-2 bg-slate-500 text-white border-2 font-bold hover:opacity-90 rounded-lg shadow-md transition duration-200"
-          onClick={() => navigate("/allUsers/add-user")}
+          onClick={() => navigate("/admin/allUsers/add-user")}
         >
           <PlusCircle className="mr-2" />
           <span> Add User</span>
@@ -112,12 +112,12 @@ const AllUsers: React.FC = () => {
             label={role.name}
             to={`/allUsers/${role.name.toLowerCase()}`}
             gradient={generateColorGradient(index)}
-            onClick={() => navigate(`/allUsers/${role.name.toLowerCase()}`)}
+            onClick={() => navigate(`/admin/allUsers/${role.name.toLowerCase()}`)}
           />
         ))}
       </div>
 
-      <div className="mt-6 -ml-[100px] w-full">
+      <div className="mt-6 w-full">
         <Outlet />
       </div>
     </div>

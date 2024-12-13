@@ -144,26 +144,30 @@ import Login from './components/Navbar/Login';
 import Nav from './components/Navbar/Nav';
 
 import CourseTable from './components/Tables/courseTables';
-import UserTable from './components/Tables/traineeTables';
-import AdminTable from './components/Tables/adminTables';
-import FinanceTable from './components/Tables/salesTables';
-import TrainerTable from './components/Tables/trainerTables';
+import UserManagement from './components/Tables/userManagement';
+
 import AddUser from './components/Tables/addUser';
 
 import AllUsers from './components/Tables/allUsers';
 import CourseCategoryTable from './components/Tables/courseCategory';
 import ManageRoles from './components/Tables/rolesTables';
 import PermissionRoles from './components/Tables/permissionTables';
-import RolePermission from './components/Tables/rolePermission';
 
 import ProtectedRoute from './components/protectedRoute';
+
+import TraineeHelloWorld from './components/Trainee/TraineeHelloWorld';
+import UserSettings from './components/Trainee/userSettings';
+import CourseDetails from './components/Trainee/CourseDetails/courseDetails';
+import courseData from './components/Trainee/data.json';
+import { Category, Course } from './components/Trainee/types';
+import Footer from './components/Trainee/Footer/Footer';
 
 
 import TrainerHelloWorld from './components/Trainer/TrainerHelloWorld';
 
-import TraineeHelloWorld from './components/Trainee/TraineeHelloWorld';
 
 import { Toaster } from 'sonner';
+
 
 const App: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
@@ -172,6 +176,13 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<string>(() => localStorage.getItem('role') || '');
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('userName') || '');
   const [loading, setLoading] = useState<boolean>(true);
+
+  // Flatten all courses for easy access in CourseDetails route
+  const allCourses: Course[] = (courseData as unknown as { categories: Category[] }).categories.flatMap(
+    (category) => category.courses
+  );
+
+  console.log(allCourses);
 
   useEffect(() => {
     const authenticateWithToken = async () => {
@@ -234,15 +245,35 @@ const App: React.FC = () => {
           <Route path="course-category" element={<CourseCategoryTable />} />
           <Route path="manage-roles-and-permissions" element={<ManageRoles />} />
           <Route path="manage-permissions" element={<PermissionRoles />} />
-          <Route path="manage-role-permission" element={<RolePermission />} />
-          <Route path="allUsers/" element={<AllUsers />}>
-            <Route path="trainee" element={<UserTable />} />
-            <Route path="admin" element={<AdminTable />} />
-            <Route path="sales" element={<FinanceTable />} />
-            <Route path="trainer" element={<TrainerTable />} />
+          
+          <Route path="allUsers" element={<AllUsers />}>
+            <Route path=":roleName" element={<UserManagement />} />
+          
             <Route path="add-user" element={<AddUser />} />
           </Route>
+
+ 
         </Route>
+
+
+
+        <Route
+          path="/trainee/*"
+          element={
+            <ProtectedRoute allowedRoles={['trainee']}>
+              <>
+                <TraineeHelloWorld isAuthenticated={isAuthenticated} />
+                <Footer />
+              </>
+            </ProtectedRoute>
+          }
+        >
+          {/* Child Routes */}
+          <Route path="settings" element={<UserSettings />} />
+          <Route path="course/:courseId" element={<CourseDetails courses={allCourses} />} />
+        </Route>
+
+
 
         {/* Trainer Protected Routes */}
         <Route
@@ -253,18 +284,7 @@ const App: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          {/* <Route path="dashboard" element={<Dashboard />} /> */}
         </Route>
-
-
-        <Route
-          path="/trainee"
-          element={
-            <ProtectedRoute allowedRoles={['trainee']}>
-              <TraineeHelloWorld />
-            </ProtectedRoute>
-          }
-        />
 
 
         {/* Role-based Redirection */}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
 import GWClogoLight from '../../images/gwc_light.svg';
+import teqcertify from '../../images/teq-logo-2.png';
 
 interface NavProps {
   isAuthenticated: boolean;
@@ -66,7 +67,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
   }, [isAuthenticated]);
 
   return (
-    <div className="bg-purple-900 p-4 shadow-lg">
+    <div className="bg-gradient-to-r bg-gray-600 p-4 shadow-lg">
       <div className="flex justify-between items-center max-w-screen-xxl">
 
         <Link
@@ -79,11 +80,11 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
               ? "/trainee"
               : "/"
           }
-          className="text-white text-2xl font-bold"
+          className="hover:scale-105 transform transition"
         >
-          <img src={GWClogoLight} alt="GWC Logo" className="w-[190px]" />
+          <img src={teqcertify} alt="teqcertify" className="w-full h-20" />
         </Link>
-
+  
         {/* Centered Search Bar */}
         <div className="hidden md:flex items-center">
           <form onSubmit={handleSearchSubmit} className="relative w-[450px]">
