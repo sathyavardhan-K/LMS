@@ -144,6 +144,7 @@ import Login from './components/Navbar/Login';
 import Nav from './components/Navbar/Nav';
 
 import CourseTable from './components/Tables/courseTables';
+
 import UserManagement from './components/Tables/userManagement';
 
 import AddUser from './components/Tables/addUser';
