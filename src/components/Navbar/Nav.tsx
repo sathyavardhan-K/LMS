@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
 import GWClogoLight from '../../images/gwc_light.svg';
-import teqcertify from '../../images/teq-logo-2.png';
+import teqcertify from 'https://teqcertify.com/wp-content/uploads/2024/12/Untitled-design-3.png';
 
 interface NavProps {
   isAuthenticated: boolean;
@@ -67,7 +67,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
   }, [isAuthenticated]);
 
   return (
-    <div className="bg-gradient-to-r bg-gray-600 p-4 shadow-lg">
+    <div className="bg-gradient-to-r bg-gray-700 p-4 shadow-lg">
       <div className="flex justify-between items-center max-w-screen-xxl">
 
         <Link
@@ -82,11 +82,11 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
           }
           className="hover:scale-105 transform transition"
         >
-          <img src={teqcertify} alt="teqcertify" className="w-full h-20" />
+          <img src={teqcertify} alt="teqcertify" className="w-48 h-16" />
         </Link>
   
         {/* Centered Search Bar */}
-        <div className="hidden md:flex items-center">
+        {/* <div className="hidden md:flex items-center">
           <form onSubmit={handleSearchSubmit} className="relative w-[450px]">
             <input
               type="text"
@@ -102,7 +102,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
               <FaSearch />
             </button>
           </form>
-        </div>
+        </div> */}
 
         {/* Desktop Navigation Buttons */}
         <div className="hidden md:flex items-center space-x-6">
