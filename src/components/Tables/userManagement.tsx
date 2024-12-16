@@ -59,12 +59,15 @@ const UserManagement: React.FC = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      console.log('userResp', userResponse);
+
       if (userResponse.data && Array.isArray(userResponse.data.Users)) {
         const filteredUsers = userResponse.data.Users.filter(
           (user: { role: any; roleName: string }) =>
             user.role.name.toLowerCase() === roleName.toLowerCase() // Filter by dynamic roleName
         );
         setUserData(filteredUsers);
+        console.log('fileterdUsers',filteredUsers);
       } else {
         console.error("Unexpected data format:", userResponse.data);
         toast.error("Unexpected response format from the server.");
