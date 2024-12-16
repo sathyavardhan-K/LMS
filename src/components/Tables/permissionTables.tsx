@@ -242,8 +242,8 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
   }, [permissions]);
  
   return (
-    <div className="flex-1 p-4 mt-10 ml-32">
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[952px]">
+    <div className="flex-1 p-4 mt-10 ml-24">
+      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[962px]">
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Permissions</h2>
           <p className="text-sm font-light">Manage permissions easily.</p>
@@ -256,7 +256,7 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
         </Button>
       </div>
  
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "82%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "74%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection

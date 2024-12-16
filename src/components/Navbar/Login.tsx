@@ -110,6 +110,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
+import Loginpic from "../../images/login&signup.png"
+
 interface LoginProps {
   setIsAuthenticated: (auth: boolean) => void;
   setUserName: (name: string) => void;
@@ -168,8 +170,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
         <div className="flex flex-col pb-5">
           <h1 className="font-extrabold text-3xl m-6 mx-16 text-zinc-700">Log in</h1>
           <h2 className="mx-16 my-3 text-slate-500 font-normal">
-            Ready for your next adventure? Log in to discover new destinations, exclusive deals, and plan your perfect
-            getaway. Let's make your travel dreams come true!
+          TeqCertify offers a wide range of industry-aligned courses designed to empower learners at every stage of their journey. Whether you're looking to upskill, switch careers, or master a new domain, our courses are tailored to meet your goals.
           </h2>
           <form onSubmit={handleLogin}>
             <input
@@ -210,7 +211,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
 
         </div>
         <img
-          src="https://static.vecteezy.com/system/resources/previews/001/226/527/large_2x/summer-beach-concept-of-an-ocean-wave-on-empty-sandy-beach-free-photo.jpg"
+          src={Loginpic}
           className="object-cover max-w-[400px] hidden rounded-md md:block"
           alt="Summer beach"
         />

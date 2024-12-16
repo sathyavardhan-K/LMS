@@ -290,8 +290,8 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
   }, [roles]);
 
   return (
-    <div className="flex-1 p-4 mt-10 ml-10">
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1120px]">
+    <div className="flex-1 p-4 mt-10 ml-24">
+      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1130px]">
         <div className="flex flex-col">
           <h2 className="text-2xl font-bold tracking-wide">Roles & Permissions</h2>
           <p className="text-sm font-light">Manage roles and permissions easily.</p>
@@ -304,7 +304,7 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
         </Button>
       </div>
 
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "90%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "87%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection

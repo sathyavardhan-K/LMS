@@ -88,13 +88,6 @@ const Sidebar: React.FC = () => {
                   isActive={location.pathname === "/admin/manage-permissions"}
               />
 
-              {/* <SidebarButton
-                  icon={<Ribbon/>}
-                  label="Manage RolePermissions"
-                  to="/manage-role-permission"
-                  isActive={location.pathname === "/manage-role-permission"}
-              /> */}
-
             </div>
           )}
         </nav>
@@ -119,7 +112,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
   <Link
     to={to}
     className={`flex items-center w-full p-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-      isActive ? "bg-blue-600 text-white" : "hover:bg-gray-700"
+      isActive ? "bg-[#1fc15d] text-white" : "hover:bg-gray-700"
     }`}
   >
     <div className={`mr-3 ${isActive ? "text-white" : "text-blue-400"}`}>
