@@ -1,97 +1,240 @@
+// import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import axios from "axios";
+
+// import Loginpic from "../../images/login&signup.png";
+// import LoadingSpinner from "../loadingSpinner";
+
+// interface LoginProps {
+//   setIsAuthenticated: (auth: boolean) => void;
+//   setUserName: (name: string) => void;
+// }
+
+// const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [error, setError] = useState("");
+//   const [isLoading, setIsLoading] = useState(false); // State for spinner
+//   const navigate = useNavigate();
+
+//   const handleLogin = async (e: React.FormEvent) => {
+//     e.preventDefault();
+//     setIsLoading(true); // Show spinner when login starts
+
+//     try {
+//       const response = await axios.post("/auth/login", { email, password });
+
+//       // Log response for debugging
+//       console.log("Login successful:", response.data);
+
+//       const { accessToken, user } = response.data;
+//       console.log("tokennn", accessToken);
+
+//       // Save token and user data to localStorage
+//       localStorage.setItem("authToken", accessToken);
+//       localStorage.setItem("isAuthenticated", "true");
+//       localStorage.setItem("role", user.role);
+//       localStorage.setItem("userName", `${user.firstName} ${user.lastName}`);
+//       localStorage.setItem("userId", `${user.id}`);
+
+//       // Update application state
+//       setIsAuthenticated(true);
+//       setUserName(`${user.firstName} ${user.lastName}`);
+
+//       console.log("user role", user.role);
+
+//       // Redirect based on user role
+//       if (user.role === "admin") {
+//         console.log("user role", user.role);
+//         navigate("/admin/dashboard");
+//       } else if (user.role === "trainer") {
+//         navigate("/trainer");
+//       } else if (user.role === "trainee") {
+//         navigate("/trainee");
+//       } else {
+//         navigate("/"); // Default or fallback route
+//       }
+//     } catch (err) {
+//       setError("An error occurred during login. Please try again.");
+//     } finally {
+//       setIsLoading(false); // Hide spinner after login completes
+//     }
+//   };
+
+//   return (
+//     <>
+//       {isLoading && <LoadingSpinner timeout={8000}/>} {/* Show spinner when loading */}
+//       <div className="flex items-center justify-center min-h-screen bg-yellow-50">
+//         {/* Card Container */}
+//         <div className="relative flex flex-col bg-white space-x-5 rounded-2xl shadow-md md:max-w-[1000px] md:min-w[800px] md:flex-row md:space-y-0 -mt-[50px]">
+//           <div className="flex flex-col pb-5">
+//             <h1 className="font-extrabold text-3xl m-6 mx-16 text-zinc-700">
+//               Log in
+//             </h1>
+//             <h2 className="mx-16 my-3 text-slate-500 font-normal">
+//               TeqCertify offers a wide range of industry-aligned courses
+//               designed to empower learners at every stage of their journey.
+//               Whether you're looking to upskill, switch careers, or master a new
+//               domain, our courses are tailored to meet your goals.
+//             </h2>
+//             <form onSubmit={handleLogin}>
+//               <input
+//                 className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+//                 type="email"
+//                 placeholder="Email"
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//                 required
+//               />
+//               <input
+//                 className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+//                 type="password"
+//                 placeholder="Password"
+//                 value={password}
+//                 onChange={(e) => setPassword(e.target.value)}
+//                 required
+//               />
+
+//               {error && (
+//                 <p className="text-red-500 text-sm mb-4 mx-16">{error}</p>
+//               )}
+
+//               <div className="flex flex-col pb-10 md:flex-row m-2 space-y-5 mx-20">
+//                 <p className="md:flex-1 my-3 cursor-pointer text-xl font-bold text-yellow-500 hover:text-yellow-700 duration-200 mt-6">
+//                   Forgot your password?
+//                 </p>
+
+//                 <button
+//                   className="md:flex-1 rounded-lg py-5 transition duration-200 text-slate-50 bg-yellow-400 shadow-sm font-semibold hover:translate-y-[-5px] hover:shadow-md hover:shadow-yellow-400"
+//                   type="submit"
+//                 >
+//                   Log in
+//                 </button>
+//               </div>
+//             </form>
+//           </div>
+//           <img
+//             src={Loginpic}
+//             className="object-cover max-w-[400px] hidden rounded-md md:block"
+//             alt="Summer beach"
+//           />
+//         </div>
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Login;
+
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie'; // Import js-cookie
-import LoginImg from '../../images/login&signup.png';
+import axios from 'axios';
+
+import Loginpic from "../../images/login&signup.png"
 
 interface LoginProps {
-  setIsAuthenticated: (value: boolean) => void;
+  setIsAuthenticated: (auth: boolean) => void;
   setUserName: (name: string) => void;
 }
+
 const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       const response = await axios.post('/auth/login', { email, password });
-  
+
       // Log response for debugging
       console.log('Login successful:', response.data);
-  
-      // Extract token and user details
+
       const { accessToken, user } = response.data;
-      const fullName = `${user.firstName} ${user.lastName}`;
-      const userId = user.id; // Assuming `id` is the property for the user ID
-  
-      console.log('accesstoken', accessToken);
-  
-      // Store token and user ID in cookies
-      Cookies.set('authToken', accessToken);
-      Cookies.set('userId', userId);
-  
-      // Update authentication state and user name
+      console.log('tokennn', accessToken);
+
+      // Save token and user data to localStorage
+      localStorage.setItem('authToken', accessToken);
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('role', user.role);
+      localStorage.setItem('userName', `${user.firstName} ${user.lastName}`);
+
+      // Update application state
       setIsAuthenticated(true);
-      setUserName(fullName);
-  
-      // Redirect to home route
-      navigate('/');
+      setUserName(`${user.firstName} ${user.lastName}`);
+
+      console.log('user role', user.role);
+
+      // Redirect based on user role
+      if (user.role === 'admin') {
+        console.log('user role', user.role);
+        navigate('/admin/dashboard');
+      } else if (user.role === 'trainer') {
+        navigate('/trainer');
+      } else if(user.role === 'trainee') {
+        navigate('/trainee');
+      } else {
+        navigate('/'); // Default or fallback route
+      }
     } catch (err) {
-      console.error('Login failed:', err);
-      setError('Login failed. Please check your email and password.');
+      setError('An error occurred during login. Please try again.');
     }
   };
-  
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 h-screen bg-gradient-to-r from-purple-200 to-blue-200">
-      {/* Image on the left */}
-      <div className="hidden md:block">
-        <img src={LoginImg} alt="Login" className="w-[520px] h-[520px] mt-14 ml-56" />
-      </div>
+    <div className="flex items-center justify-center min-h-screen bg-yellow-50">
+      {/* Card Container */}
+      <div className="relative flex flex-col bg-white space-x-5 rounded-2xl shadow-md md:max-w-[1000px] md:min-w[800px] md:flex-row md:space-y-0 -mt-[50px]">
+        <div className="flex flex-col pb-5">
+          <h1 className="font-extrabold text-3xl m-6 mx-16 text-zinc-700">Log in</h1>
+          <h2 className="mx-16 my-3 text-slate-500 font-normal">
+          TeqCertify offers a wide range of industry-aligned courses designed to empower learners at every stage of their journey. Whether you're looking to upskill, switch careers, or master a new domain, our courses are tailored to meet your goals.
+          </h2>
+          <form onSubmit={handleLogin}>
+            <input
+              className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <input
+              className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
 
-      {/* Login Form on the right */}
-      <div className="flex justify-center items-center p-8 -mt-[120px] ml-56">
-        <div className="bg-white rounded-lg shadow-xl w-full max-w-md p-8">
-          <h2 className="text-3xl font-semibold mb-6 text-center text-blue-700">Login</h2>
+            {error && <p className="text-red-500 text-sm mb-4 mx-16">{error}</p>}
 
-          {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+            <div className="flex flex-col pb-10 md:flex-row m-2 space-y-5 mx-20">
+              <p className="md:flex-1 my-3 cursor-pointer text-xl font-bold text-yellow-500 hover:text-yellow-700 duration-200 mt-6">
+                Forgot your password?
+              </p>
 
-          <form onSubmit={handleSubmit}>
-            <label className="block mb-3">
-              <span className="text-gray-600">Email</span>
-              <input
-                type="email"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </label>
-
-            <label className="block mb-3">
-              <span className="text-gray-600">Password</span>
-              <input
-                type="password"
-                className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </label>
-
-            <button
-              type="submit"
-              className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition shadow-md"
-            >
-              Login
-            </button>
+              <button
+                className="md:flex-1 rounded-lg py-5 transition duration-200 text-slate-50 bg-yellow-400 shadow-sm font-semibold hover:translate-y-[-5px] hover:shadow-md hover:shadow-yellow-400"
+                type="submit"
+              >
+                Log in
+              </button>
+            </div>
           </form>
+      
+     
+           
+
         </div>
+        <img
+          src={Loginpic}
+          className="object-cover max-w-[400px] hidden rounded-md md:block"
+          alt="Summer beach"
+        />
       </div>
     </div>
   );

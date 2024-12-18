@@ -67,7 +67,10 @@ module.exports = {
 			},
 
 			'custom-dark': '#DDC3E7', 
-  		}
+  		},
+		  backgroundImage: {
+			'custom-gradient': 'linear-gradient(to right, #50bc8e, #3fa7d2, #4e6db4)',
+		  },
   	}
   },
   plugins: [require("tailwindcss-animate")],
