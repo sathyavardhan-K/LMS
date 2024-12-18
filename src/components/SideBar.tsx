@@ -13,7 +13,7 @@ const Sidebar: React.FC = () => {
           {/* Admin Section with collapsible menu */}
           <button
             onClick={() => setIsAdminOpen(!isAdminOpen)}
-            className={`relative flex items-center w-full p-3 text-sm font-medium rounded-md transition-all duration-300 border-b-2 border-gray-200 ${
+            className={`relative flex items-center w-full p-3 text-sm font-metropolis rounded-md transition-all duration-300 border-b-2 border-gray-200 ${
               isAdminOpen
                 ? "bg-gray-300 text-gray-800"
                 : "bg-gray-100 text-gray-800"
@@ -51,19 +51,19 @@ const Sidebar: React.FC = () => {
           </button>
 
           {isAdminOpen && (
-            <div className="ml-6 space-y-2 transition-all duration-300">
-              <SidebarButton
-                icon={<Grid />}
-                label="Courses"
-                to="/admin/courses"
-                isActive={location.pathname === "/admin/courses"}
-              />
-
+            <div className="space-y-2 transition-all duration-300">
               <SidebarButton
                 icon={<Users />}
                 label="Users"
                 to="/admin/allUsers"
                 isActive={location.pathname === "/admin/allUsers"}
+              />
+              
+              <SidebarButton
+                icon={<Grid />}
+                label="Courses"
+                to="/admin/courses"
+                isActive={location.pathname === "/admin/courses"}
               />
 
               <SidebarButton
@@ -111,15 +111,16 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
 }) => (
   <Link
     to={to}
-    className={`flex items-center w-full p-2 text-sm font-medium rounded-md transition-colors duration-200 ${
-      isActive ? "bg-custom-gradient text-white" : "hover:bg-gray-700"
+    className={`flex flex-col items-center justify-center w-full p-3 text-sm font-metropolis font-semibold rounded-md transition-colors duration-200 ${
+      isActive ? "bg-custom-gradient text-white shadow-lg" : "hover:bg-gray-700"
     }`}
   >
-    <div className={`mr-3 ${isActive ? "text-white" : "text-blue-400"}`}>
+    <div className={`text-lg ${isActive ? "text-white" : "text-blue-400"}`}>
       {icon}
     </div>
-    <span>{label}</span>
+    <span className="mt-2">{label}</span>
   </Link>
 );
+
 
 export default Sidebar;

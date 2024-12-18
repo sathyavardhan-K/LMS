@@ -55,6 +55,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   const [courseCategory, setCourseCategory] = useState<courseOptions[]>([]);
   const [instructor, setInstructor] = useState<instructorOptions[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [courseToDelete, setCourseToDelete] = useState< CourseData | null>(null);
   const [newCourse, setNewCourse] = useState<CourseData>({
     id: 0,
@@ -65,6 +66,23 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     courseCategory: "",
     courseInstructor: "",
   });
+
+  const validateFields = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!newCourse.courseName) newErrors.courseName = 'courseName is required.';
+    if (!newCourse.courseDesc) newErrors.courseDesc = 'courseDesc is required.';
+    if (!newCourse.courseCategoryId) newErrors.courseCategoryId = 'courseCategory is required.';
+    if (!newCourse.courseInstructorId) newErrors.courseInstructorId = 'courseInstructor is required.';
+
+    setErrors(newErrors);
+
+    Object.entries(newErrors).forEach(([field, message]) => {
+      toast.error(`${field}: ${message}`);
+    });
+
+    return newErrors;
+  }
 
   // Fetch courses
   const fetchCourses = async () => {
@@ -244,6 +262,12 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       return;
     }
 
+    const validationErrors = validateFields();
+    // Check if there are any validation errors
+    if (Object.keys(validationErrors).length > 0) {
+      return; // Stop further execution if errors exist
+    }
+
     const courseToSubmit = {
       courseName: newCourse.courseName,
       courseDesc: newCourse.courseDesc,
@@ -304,10 +328,10 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         field: "actions",
         cellRenderer: (params: any) => (
           <div className="flex space-x-2">
-            <Button onClick={() => editCourse(params)} className="bg-blue-500 text-white">
-              <Edit className="h-5 w-5" />
+            <Button onClick={() => editCourse(params)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">
+              <Edit className="h-5 w-4" />
             </Button>
-            <Button onClick={() => confirmDeleteCourse(params.data)} className="bg-red-500 text-white">
+            <Button onClick={() => confirmDeleteCourse(params.data)} className="bg-red-500 p-2 rounded hover:bg-red-700 text-white">
               <Trash className="h-5 w-5" />
             </Button>
           </div>
@@ -327,9 +351,12 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
 
   return (
     <div className="flex-1 p-4 mt-10 ml-24">
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
-        <h2 className="text-2xl font-bold">Courses</h2>
-        <Button onClick={addNewRow} className="bg-yellow-400 text-gray-900 font-semibold">
+      <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
+      <div className="flex flex-col">
+          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Courses</h2>
+          <p className="text-sm font-metropolis font-medium">Manage course easily.</p>
+        </div>
+        <Button onClick={addNewRow} className="bg-yellow-400 text-gray-900 font-metropolis font-semibold ">
           + New Course
         </Button>
       </div>
@@ -337,25 +364,28 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       {isDeleteModalOpen && courseToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
-            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
-            <p>
+            <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
+            <p className="mb-4 font-metropolis font-medium">
               Are you sure you want to delete the course {" "}
-              <span className="font-bold">
+              <strong>
                 {courseToDelete?.courseName?.charAt(0).toUpperCase() +
                   courseToDelete?.courseName?.slice(1).toLowerCase() || "this course"}
-              </span>
+              </strong>
               ?
             </p>
             <div className="flex justify-end space-x-2 mt-4">
               <Button
                 onClick={handleCancelDelete}
-                className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleDeleteCourse}
-                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700"
+                className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Delete
               </Button>
@@ -378,30 +408,30 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold">{editing ? "Edit Course" : "Add New Course"}</h2>
+            <h2 className="text-xl font-metropolis font-semibold">{editing ? "Edit Course" : "Add New Course"}</h2>
             <form>
-              <div className="mb-4">
-                <label className="block font-medium">Course Name</label>
+              <div className="mb-4 mt-4">
+                <label className="block font-metropolis font-medium">Course Name</label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   value={newCourse.courseName}
                   onChange={(e) => setNewCourse({ ...newCourse, courseName: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Description</label>
+                <label className="block font-metropolis font-medium">Description</label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded p-2 font-metropolis text-gray-400 font-semibold"
                   value={newCourse.courseDesc}
                   onChange={(e) => setNewCourse({ ...newCourse, courseDesc: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Category</label>
+                <label className="block font-metropolis font-medium">Category</label>
                 <select
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded p-2 font-metropolis text-gray-400 font-semibold"
                   value={newCourse.courseCategoryId}
                   onChange={(e) =>
                     setNewCourse({
@@ -421,9 +451,9 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                 </select>
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Instructor</label>
+                <label className="block font-metropolis font-medium">Instructor</label>
                 <select
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded p-2 font-metropolis text-gray-400 font-semibold"
                   value={newCourse.courseInstructorId}
                   onChange={(e) =>
                     setNewCourse({
@@ -445,13 +475,16 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
               <div className="flex space-x-4">
                 <Button
                   onClick={handleFormSubmit}
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
+                  className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   {editing ? "Update" : "Create"}
                 </Button>
                 <Button
                   onClick={handleModalClose}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   Cancel
                 </Button>

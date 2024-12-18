@@ -104,7 +104,6 @@ const AddUser = () => {
     const validationErrors = validateFields();
     // Check if there are any validation errors
     if (Object.keys(validationErrors).length > 0) {
-      toast.error("Please resolve all validation errors before submitting.");
       return; // Stop further execution if errors exist
     }
     const userData = { ...newUser };
@@ -115,7 +114,6 @@ const AddUser = () => {
       const createdUser = response.newUser;
 
       toast.success("User added successfully!");
-      console.log(createdUser);
       // Redirect based on the user's role
       if (createdUser.role && createdUser.role.name === "Admin") {
         navigate("/admin/allUsers/admin", { state: { user: createdUser } });
