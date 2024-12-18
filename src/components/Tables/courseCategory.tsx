@@ -367,25 +367,13 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                 >
                   <input {...getInputProps()} />
                   {uploadedFile ? (
-                    <p className="text-green-600 font-metropolis font-semibold">{uploadedFile.name}</p>
+                    <p className="text-green-600 font-metropolis font-semibold mt-6">{uploadedFile.name}</p>
                   ) : (
-                    <p className="text-gray-400 font-semibold">
+                    <p className="text-gray-400 font-semibold mt-4">
                       Drag & drop a file here, or click to select one
                     </p>
                   )}
                 </div>
-                <label className="block font-medium">Image Path</label>
-                <input
-                  type="text"
-                  className="w-full border rounded p-2"
-                  value={newCategory.courseCategoryImg}
-                  onChange={(e) =>
-                    setNewCategory({
-                      ...newCategory,
-                      courseCategoryImg: e.target.value,
-                    })
-                  }
-                />
               </div>
               <div className="flex justify-end space-x-2">
                 <Button

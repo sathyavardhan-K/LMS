@@ -182,6 +182,8 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars, FaSearch } from "react-icons/fa";
+import { NavLink } from "react-router-dom";
+import { MdPersonAddAlt1 } from "react-icons/md";
 import GWClogoLight from '../../images/gwc_light.svg';
 import teqcertify from '../../images/teq-logo-2.png';
 
@@ -263,16 +265,71 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
           }
           className="hover:scale-105 transform transition"
         >
-          <img src="https://teqcertify.com/wp-content/uploads/2024/12/Untitled-design-3.png" alt="teqcertify" className="w-48 h-16" />
+          <img src="https://teqcertify.com/wp-content/uploads/2024/12/Untitled-design-3.png" alt="teqcertify" className="w-56 h-16" />
         </Link>
   
 
         {/* Desktop Navigation Buttons */}
-        <div className="hidden md:flex items-center space-x-6">
+        <div className="hidden md:flex items-center w-full px-12">
           {!isAuthenticated ? (
-            <Link to="/login" className="text-white"/>
-          ) : (
             <>
+              <div className="flex flex-1 justify-center items-center space-x-6">
+                <NavLink
+                  to="/"
+                  className={({ isActive }) =>
+                    `relative text-white font-metropolis font-semibold text-md ${isActive ? "text-green-500" : "hover:text-green-500 transition"
+                    } group`
+                  }
+                >
+                  Home
+                  <span className="absolute bottom-0 left-0 w-0 h-[0.5px] bg-green-500 transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+                <NavLink
+                  to="/about"
+                  className={({ isActive }) =>
+                    `relative text-white font-metropolis font-semibold text-md ${isActive ? "text-green-500" : "hover:text-green-500 transition"
+                    } group`
+                  }
+                >
+                  About
+                  <span className="absolute bottom-0 left-0 w-0 h-[0.5px] bg-green-500 transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+                <NavLink
+                  to=""
+                  className={({ isActive }) =>
+                    `relative text-white font-metropolis font-semibold text-md ${isActive ? "text-green-500" : "hover:text-green-500 transition"
+                    } group`
+                  }
+                  style={{ wordSpacing: "0.2em" }}
+                >
+                  Talent Acquisition Partner
+                  <span className="absolute bottom-0 left-0 w-0 h-[0.5px] bg-green-500 transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+                <NavLink
+                  to="/contact"
+                  className={({ isActive }) =>
+                    `relative text-white font-metropolis font-semibold text-md ${isActive ? "text-green-500" : "hover:text-green-500 transition"
+                    } group`
+                  }
+                >
+                  Contact
+                  <span className="absolute bottom-0 left-0 w-0 h-[0.5px] bg-green-500 transition-all duration-300 group-hover:w-full"></span>
+                </NavLink>
+              </div>
+              {/* Register Button */}
+              <NavLink
+                to="/register"
+                className={({ isActive }) =>
+                  `relative flex items-center text-white font-metropolis font-semibold text-md ${isActive ? "text-green-500" : "hover:text-green-500 transition"
+                  } group`
+                }
+              >
+                <MdPersonAddAlt1 className="mr-2 text-xl text-gray-600 hover:text-green-500" /> Register
+              </NavLink>
+            </>
+          ) : (
+            // Authenticated state: Show username and logout
+            <div className="flex flex-1 justify-end items-center space-x-4">
               <span className="text-white font-medium">{`Welcome, ${name || "User"}`}</span>
               <button
                 onClick={handleLogout}
@@ -280,7 +337,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
               >
                 Logout
               </button>
-            </>
+            </div>
           )}
         </div>
 
@@ -292,27 +349,6 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
           <FaBars />
         </button>
       </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden bg-gray-800 mt-2 rounded-lg p-4">
-          <div className="flex flex-col items-center space-y-4">
-            {!isAuthenticated ? (
-              <Link to="/login" className="text-white">Login</Link>
-            ) : (
-              <>
-                <span className="text-white font-medium">{`Welcome, ${name || "User"}`}</span>
-                <button
-                  onClick={handleLogout}
-                  className="bg-red-600 text-white px-6 py-2 rounded-full shadow-md hover:bg-red-700 transition duration-300"
-                >
-                  Logout
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };

@@ -434,28 +434,20 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
                     ))
                   )}
                 </select>
-
-                {/* Displaying selected permissions with unique keys */}
-                {/* <div className="mt-2">
-                  {newRole.permissions.map((perm) => (
-                    <Badge key={perm.action} color="primary" className="mr-2">
-                      {" "}
-            
-                      {perm.action}
-                    </Badge>
-                  ))}
-                </div> */}
               </div>
               <div className="flex justify-end space-x-2">
                 <Button
                   onClick={handleModalClose}
-                  className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleFormSubmit}
-                  className="bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-700"
+                  className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   {editing ? "Update" : "Create"}
                 </Button>
