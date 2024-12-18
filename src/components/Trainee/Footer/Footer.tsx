@@ -1,5 +1,5 @@
 import React from 'react';
-import teqcertify from '../images/teq-logo.png';
+import teqcertify from '../../../images/teq-logo-1.png';
 
 const Footer: React.FC = () => {
   return (

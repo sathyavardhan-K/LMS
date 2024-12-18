@@ -22,9 +22,6 @@ import ProtectedRoute from './components/protectedRoute';
 
 import TraineeHome from './components/Trainee/traineeHome';
 import UserSettings from './components/Trainee/UserSettings/userSettings';
-import CourseDetails from './components/Trainee/CourseDetails/courseDetails';
-import courseData from './components/Trainee/data.json';
-import { Category, Course } from './components/Trainee/types';
 import Footer from './components/Trainee/Footer/Footer';
 
 
@@ -41,13 +38,6 @@ const App: React.FC = () => {
   const [userRole, setUserRole] = useState<string>(() => localStorage.getItem('role') || '');
   const [userName, setUserName] = useState<string>(() => localStorage.getItem('userName') || '');
   const [loading, setLoading] = useState<boolean>(true);
-
-  // Flatten all courses for easy access in CourseDetails route
-  const allCourses: Course[] = (courseData as unknown as { categories: Category[] }).categories.flatMap(
-    (category) => category.courses
-  );
-
-  console.log(allCourses);
 
   useEffect(() => {
     const authenticateWithToken = async () => {
@@ -135,7 +125,7 @@ const App: React.FC = () => {
         >
           {/* Child Routes */}
           <Route path="settings" element={<UserSettings />} />
-          <Route path="course/:courseId" element={<CourseDetails courses={allCourses} />} />
+          {/* <Route path="course/:courseId" element={<CourseDetails courses={allCourses} />} /> */}
         </Route>
 
 
