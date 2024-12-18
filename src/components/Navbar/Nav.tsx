@@ -68,7 +68,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
 
   return (
     <div className="bg-gradient-to-r bg-black p-4 shadow-lg">
-      <div className="flex justify-between items-center max-w-screen-xxl">
+      <div className="flex justify-between items-center max-w-screen-xxl ml-8">
 
         <Link
           to={
@@ -85,24 +85,6 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
           <img src="https://teqcertify.com/wp-content/uploads/2024/12/Untitled-design-3.png" alt="teqcertify" className="w-48 h-16" />
         </Link>
   
-        {/* Centered Search Bar */}
-        {/* <div className="hidden md:flex items-center">
-          <form onSubmit={handleSearchSubmit} className="relative w-[450px]">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={handleSearchChange}
-              placeholder="Search..."
-              className="w-full px-4 py-2 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            />
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 transform -translate-y-1/2 text-yellow-400 hover:text-yellow-600"
-            >
-              <FaSearch />
-            </button>
-          </form>
-        </div> */}
 
         {/* Desktop Navigation Buttons */}
         <div className="hidden md:flex items-center space-x-6">

@@ -4,6 +4,9 @@ module.exports = {
     content: ["./src/**/*.{html,js,ts,tsx}"],
   theme: {
   	extend: {
+		fontFamily: {
+			metropolis: ["Metropolis", "sans-serif"],
+		  },
   		borderRadius: {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
@@ -69,8 +72,9 @@ module.exports = {
 			'custom-dark': '#DDC3E7', 
   		},
 		  backgroundImage: {
-			'custom-gradient': 'linear-gradient(90deg, hsla(155, 99%, 46%, 1) 0%, hsla(219, 88%, 34%, 1) 80%)',
-		  },
+            'custom-gradient': 'linear-gradient(to right, #50bc8e, #3fa7d2, #4e6db4)',
+			'custom-gradient-btn': 'linear-gradient(to left, #50bc8e, #3fa7d2, #4e6db4)'
+          },
   	}
   },
   plugins: [require("tailwindcss-animate")],

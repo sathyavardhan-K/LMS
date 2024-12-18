@@ -29,12 +29,13 @@ interface RoleTableProps {
 // Helper function to get token
 const getToken = () => localStorage.getItem("authToken");
 
-const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) => {
+const ManageRoles = ({ editable = true }: RoleTableProps) => {
   const [roles, setRoles] = useState<RoleData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [colDefs, setColDefs] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [roleToDelete, setRoleToDelete] = useState<RoleData | null>(null);
   const [newRole, setNewRole] = useState<RoleData>({
@@ -43,6 +44,23 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
     description: "",
     permissions: [],
   });
+
+  const validateFields = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!newRole.name) newErrors.name = 'RoleName is required.';
+    if (!newRole.description) newErrors.description = 'description is required.';
+    if (!newRole.permissions) newErrors.permissions = 'Atleast choose any one Permission';
+
+    setErrors(newErrors);
+
+    Object.entries(newErrors).forEach(([field, message]) => {
+      toast.error(`${field}: ${message}`);
+    });
+
+    return newErrors;
+  }
+
   const [availablePermissions, setAvailablePermissions] = useState<Permission[]>([]);
 
   const fetchPermissions = async () => {
@@ -196,6 +214,12 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
       return;
     }
 
+    const validationErrors = validateFields();
+    // Check if there are any validation errors
+    if (Object.keys(validationErrors).length > 0) {
+      return; // Stop further execution if errors exist
+    }
+
     const payload = {
       ...newRole,
       permissions: newRole.permissions.map((perm) => perm.action),
@@ -238,12 +262,12 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
   // Column definitions
   useEffect(() => {
     setColDefs([
-      { headerName: "Role Name", field: "name", editable: false, width: 200 },
-      { headerName: "Description", field: "description", editable: false, width: 200 },
+      { headerName: "Role Name", field: "name", editable: false, width: 150 },
+      { headerName: "Description", field: "description", editable: false, width: 270 },
       {
         headerName: "Permissions",
         field: "permissions",
-        width: 520,
+        width: 600,
         cellRenderer: (params: any) => {
           const permissions = Array.isArray(params.value) ? params.value : [];
       
@@ -291,20 +315,20 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
 
   return (
     <div className="flex-1 p-4 mt-10 ml-24">
-      <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1130px]">
+      <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
         <div className="flex flex-col">
-          <h2 className="text-2xl font-bold tracking-wide">Roles & Permissions</h2>
-          <p className="text-sm font-light">Manage roles and permissions easily.</p>
+          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Roles & Permissions</h2>
+          <p className="text-sm font-metropolis font-medium">Manage roles and permissions easily.</p>
         </div>
         <Button
           onClick={addNewRow}
-          className="bg-yellow-400 text-gray-900 font-semibold px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500"
+          className="bg-yellow-400 text-gray-900 font-metropolis font-semibold px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500"
         >
           + New Role with Permission
         </Button>
       </div>
 
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "87%" }}>
+      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "88%" }}>
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection
@@ -319,31 +343,31 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">{editing ? "Edit Role" : "Add New Role"}</h2>
+            <h2 className="text-xl font-metropolis font-semibold mb-4">{editing ? "Edit Role" : "Add New Role"}</h2>
             <form>
               <div className="mb-4">
-                <label className="block font-medium">Role Name</label>
+                <label className="block font-metropolis font-medium">Role Name</label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   value={newRole.name}
                   onChange={(e) => setNewRole({ ...newRole, name: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Description</label>
+                <label className="block font-metropolis font-medium">Description</label>
                 <input
                   type="text"
-                  className="w-full border rounded p-2"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   value={newRole.description}
                   onChange={(e) => setNewRole({ ...newRole, description: e.target.value })}
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-medium">Permissions</label>
+                <label className="block font-metropolis font-medium">Permissions</label>
                 <select
                     multiple
-                    className="w-full border rounded p-2"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newRole.permissions.map((perm) => perm.action || "")} // Ensure this is mapped correctly
                     onChange={(e) => {
                       // Get selected option values (action strings)
@@ -406,21 +430,30 @@ const ManageRoles = ({ editable = true, initialPermissions }: RoleTableProps) =>
       )}
 
 
-{isDeleteModalOpen && (
+{isDeleteModalOpen && roleToDelete &&(
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
-            <p>Are you sure you want to delete the role "{roleToDelete?.name}"?</p>
+          <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
+            <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
+            <p className="font-metropolis font-medium">Are you sure you want to delete the Role 
+              <strong>
+              {roleToDelete?.name?.charAt(0).toUpperCase() + 
+              roleToDelete?.name?.slice(1).toLowerCase() || 'this role'}
+                </strong>
+                ?
+                </p>
             <div className="flex justify-end space-x-2 mt-4">
               <Button
                 onClick={handleCancelDelete}
-                className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleDeleteRole}
-                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700"
+                className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Delete
               </Button>

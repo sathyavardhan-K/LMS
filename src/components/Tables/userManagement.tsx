@@ -4,7 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { ColDef } from "ag-grid-community";
 import { toast } from "react-toastify";
-import { Edit, Slice, Trash } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { format } from "date-fns";
 import axios from "axios";
@@ -85,6 +85,10 @@ const UserManagement: React.FC = () => {
   };
 
   useEffect(() => {
+  setSelectedUser(null);
+  setFormData(null);
+  setIsModalOpen(false);
+  
     if (roleName) {
       fetchUsersAndRoles(roleName);  // Fetch filtered users for the role
     }
@@ -142,7 +146,10 @@ const UserManagement: React.FC = () => {
 
   const handleEditClick = (user: User) => {
           setSelectedUser(user);
-          setFormData(user);
+          setFormData({
+            ...user,
+            dateOfBirth: user.dateOfBirth ? format(new Date(user.dateOfBirth), 'yyyy-MM-dd') : '',
+          });
           setIsModalOpen(true);
         };
         // Handle form field changes
@@ -157,7 +164,8 @@ const UserManagement: React.FC = () => {
           toast.error("Form data is missing!");
           return;
         }
-     
+
+        console.log('formdata', formData)
         // Prepare updated user data with the formData
         const updatedUser = {
           ...userToEdit,
@@ -170,7 +178,7 @@ const UserManagement: React.FC = () => {
           qualification: formData?.qualification,
           accountStatus: formData?.accountStatus,
           dateOfJoining: formData?.dateOfJoining
-            ? format(new Date(formData.dateOfJoining), "yyyy-MM-dd")
+            ? format(new Date(formData?.dateOfJoining), "yyyy-MM-dd")
             : userToEdit.dateOfJoining,
         };
      
@@ -191,12 +199,12 @@ const UserManagement: React.FC = () => {
           })
           .then((response) => {
             console.log("User updated:", response.data);
+            toast.success("User updated successfully!");
             setUserData((prevData) =>
               prevData.map((user) =>
                 user.id === userToEdit.id ? { ...user, ...updatedUser } : user
               )
             );
-            toast.success("User updated successfully!");
             setSelectedUser(null);
             setIsModalOpen(false); // Optionally close the edit form here
           })
@@ -250,10 +258,10 @@ const UserManagement: React.FC = () => {
 
   return (
         <div className="flex-1 p-4 mt-5 ml-20 w-[1200px] overflow-hidden">
-          <div className="flex items-center justify-between bg-gradient-to-r from-blue-600 via-purple-500 to-indigo-600 text-white px-6 py-4 rounded-lg shadow-lg mb-6">
+          <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6">
             <div className="flex flex-col">
-              <h2 className="text-2xl font-bold tracking-wide">{roleName? roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase(): ''} Management</h2>
-              <p className="text-sm font-light">
+              <h2 className="text-2xl font-metropolis font-semibold tracking-wide">{roleName? roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase(): ''} Management</h2>
+              <p className="text-sm font-metropolis font-medium">
                 Easily manage {roleName}. Edit, or delete {roleName} records with ease.
               </p>
             </div>
@@ -263,7 +271,7 @@ const UserManagement: React.FC = () => {
            {/* Edit Form - Conditional Rendering */}
            {selectedUser && (
             <div className="bg-white p-4 rounded shadow-md mb-6">
-              <h3 className="text-xl font-bold mb-4">Edit User</h3>
+              <h3 className="text-xl font-metropolis font-semibold mb-4">Edit User</h3>
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
@@ -271,42 +279,42 @@ const UserManagement: React.FC = () => {
                 }}
               >
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">First Name</label>
+                  <label className="block font-metropolis font-medium">First Name</label>
                   <input
                     type="text"
                     name="firstName"
                     value={formData?.firstName || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Last Name</label>
+                  <label className="block font-metropolis font-medium">Last Name</label>
                   <input
                     type="text"
                     name="lastName"
                     value={formData?.lastName || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Email</label>
+                  <label className="block font-metropolis font-medium">Email</label>
                   <input
                     type="email"
                     name="email"
                     value={formData?.email || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Role</label>
+                  <label className="block font-metropolis font-medium">Role</label>
                   <select
                     name="roleId"
                     value={formData?.roleId || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   >
                     <option value="">Select a role</option>
                     {roles.map((role) => (
@@ -317,52 +325,52 @@ const UserManagement: React.FC = () => {
                   </select>
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Date of Birth</label>
+                  <label className="block font-metropolis font-medium">Date of Birth</label>
                   <input
                     type="date"
                     name="dateOfBirth"
                     value={formData?.dateOfBirth || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">PhoneNumber</label>
+                  <label className="block font-metropolis font-medium">PhoneNumber</label>
                   <input
                     type="number"
                     name="phoneNumber"
                     value={formData?.phoneNumber || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Address</label>
+                  <label className="block font-metropolis font-medium">Address</label>
                   <input
                     type="text"
                     name="address"
                     value={formData?.address || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Qualification</label>
+                  <label className="block font-metropolis font-medium">Qualification</label>
                   <input
                     type="text"
                     name="qualification"
                     value={formData?.qualification || ""}
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   />
                 </div>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium">Account Status</label>
+                  <label className="block font-metropolis font-medium">Account Status</label>
                   <select
                     name="accountStatus"
                     value={formData?.accountStatus || "active"} // Default to "active"
                     onChange={handleInputChange}
-                    className="border p-2 rounded w-full"
+                    className="border p-2 rounded w-full font-metropolis text-gray-400 font-semibold"
                   >
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
@@ -370,13 +378,16 @@ const UserManagement: React.FC = () => {
                   </select>
                 </div>
                 <div className="flex space-x-2">
-                  <Button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">
+                  <Button type="submit" className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded">
                     Save Changes
                   </Button>
                   <Button
                     type="button"
                     onClick={() => setSelectedUser(null)}
-                    className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                   >
                     Cancel
                   </Button>
@@ -390,18 +401,21 @@ const UserManagement: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
             <h2 className="text-xl font-bold mb-4">Confirm Delete</h2>
             <p>Are you sure you want to delete the user details for</p>
-            <span className="font-bold">{roleName? roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase(): ''}
-            </span>?
+            <strong>{roleName? roleName.charAt(0).toUpperCase() + roleName.slice(1).toLowerCase(): ''}
+            </strong>?
             <div className="flex justify-end space-x-2 mt-4">
               <Button
                 onClick={handleCancelDelete}
-                className="bg-gray-500 text-white px-3 py-2 rounded hover:bg-gray-700"
+                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleDeleteUser}
-                className="bg-red-500 text-white px-3 py-2 rounded hover:bg-red-700"
+                className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
               >
                 Delete
               </Button>

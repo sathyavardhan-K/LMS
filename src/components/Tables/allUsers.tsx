@@ -93,10 +93,10 @@ const AllUsers: React.FC = () => {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
-      <div className="flex justify-between items-center w-full max-w-[1150px] mb-4 mt-10">
+      <div className="flex justify-between items-center w-full max-w-[1170px] mb-4 mt-10">
         <h1 className="text-2xl font-bold text-gray-600">User Roles</h1>
         <button
-          className="flex items-center px-4 py-2 bg-slate-500 text-white border-2 font-bold hover:opacity-90 rounded-lg shadow-md transition duration-200"
+          className="flex items-center px-4 py-2 bg-slate-500 text-white border-2 font-metropolis font-semibold bg-custom-gradient-btn hover:opacity-90 rounded-lg shadow-md transition duration-200"
           onClick={() => navigate("/admin/allUsers/add-user")}
         >
           <PlusCircle className="mr-2" />
@@ -104,7 +104,7 @@ const AllUsers: React.FC = () => {
         </button>
       </div>
 
-      <div className="flex flex-wrap ml-24 gap-4">
+      <div className="flex flex-wrap gap-4 font-metropolis font-semibold">
         {roles.map((role, index) => (
           <SidebarButton
             key={role.name}
