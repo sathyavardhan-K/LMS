@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { UserCheck, Users, DollarSign, Shield, PlusCircle } from "lucide-react";
 import { useNavigate, Outlet } from "react-router-dom";
-import axios from "axios"; // For API calls
+import { fetchRolesApi } from "@/api/roleApi";
 
 type Role = {
   name: string;
@@ -47,19 +47,16 @@ const AllUsers: React.FC = () => {
     }
 
     try {
-      const response = await axios.get("/roles", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const roleResponse = await fetchRolesApi();
+      console.log("roleResp", roleResponse);
 
-      if (Array.isArray(response.data)) {
-        const roleNames = response.data.map((role: { name: string }) => ({
+      if (Array.isArray(roleResponse)) {
+        const roleNames = roleResponse.map((role: { name: string }) => ({
           name: role.name,
         }));
         setRoles(roleNames);
       } else {
-        console.error("Unexpected response structure:", response.data);
+        console.error("Unexpected response structure:", roleResponse);
       }
     } catch (error) {
       console.error("Error fetching roles:", error);
@@ -112,7 +109,9 @@ const AllUsers: React.FC = () => {
             label={role.name}
             to={`/allUsers/${role.name.toLowerCase()}`}
             gradient={generateColorGradient(index)}
-            onClick={() => navigate(`/admin/allUsers/${role.name.toLowerCase()}`)}
+            onClick={() =>
+              navigate(`/admin/allUsers/${role.name.toLowerCase()}`)
+            }
           />
         ))}
       </div>

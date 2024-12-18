@@ -5,8 +5,17 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
-import axios from "axios";
 import { ColDef } from "ag-grid-community";
+
+import { 
+  createCourseApi,
+  fetchCourseApi, 
+  updateCourseApi,  
+  deleteCourseApi, 
+} from "@/api/courseApi"; 
+
+import { fetchCourseCategoryApi } from "@/api/courseCategoryApi";
+import { fetchUsersApi } from "@/api/userApi";
 
 // TypeScript types for the component props
 interface CourseTableProps {
@@ -84,15 +93,16 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     }
 
     try {
-      const response = await axios.get(`/course`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      // const response = await axios.get(`/course`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // });
 
-      console.log('course', response.data);
+      const reponse = await fetchCourseApi();
+      console.log('course', reponse);
 
-      const courses = response.data.course.map((course: any) => ({
+      const courses = reponse.map((course: any) => ({
         id: course.id,
         courseName: course.courseName,
         courseDesc: course.courseDesc,
@@ -104,15 +114,18 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         courseInstructorId: course.courseInstructorId || 0,
       }));
 
-      const responseCategory = await axios.get(`/coursecategory`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+      console.log('courses', courses);
 
+      // const responseCategory = await axios.get(`/coursecategory`, {
+      //   headers: {
+      //     Authorization: `Bearer ${token}`,
+      //   },
+      // })
+
+      const responseCategory = await fetchCourseCategoryApi();
       console.log('rescategory', responseCategory)
 
-        const courseCategory = responseCategory.data.category.map((category: any)=>({
+        const courseCategory = responseCategory.map((category: any)=>({
           id: category.id,
           courseCategory: category.courseCategory
         }));
@@ -120,14 +133,19 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         console.log('courseCategory', courseCategory);
         setCourseCategory(courseCategory);
 
-        const responseInstructor = await axios.get(`/users`,{
-          headers:{
-            Authorization: `Bearer ${token}`,
-          }
-        })
-        console.log('responseInstructor', responseInstructor.data);
+        // const responseInstructor = await axios.get(`/users`,{
+        //   headers:{
+        //     Authorization: `Bearer ${token}`,
+        //   }
+        // })
+        // console.log('responseInstructor', responseInstructor.data);
 
-        const instructor = responseInstructor.data.Users
+        const response = await fetchUsersApi(); // Wait for the Promise to resolve
+        const responseInstructor = response.Users; // Access the `Users` property
+
+        
+
+        const instructor = responseInstructor
         .filter((user: any) => {
           return (
             Array.isArray(user.role)
@@ -190,9 +208,12 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         }
     
         try {
-          await axios.delete(`/course/${courseToDelete.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+          // await axios.delete(`/course/${courseToDelete.id}`, {
+          //   headers: { Authorization: `Bearer ${token}` },
+          // });
+
+          await deleteCourseApi(courseToDelete.id);
+          
           setCourseData((prev) => prev.filter((course) => course.id !== courseToDelete.id));
           toast.success("Course deleted successfully!");
         } catch (error) {
@@ -258,21 +279,32 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
 
     try {
       if (editing) {
-        await axios.put(`/course/${newCourse.id}`, courseToSubmit, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        
+        // await axios.put(`/course/${newCourse.id}`, courseToSubmit, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
+
+        const updatedCourse = await updateCourseApi(newCourse.id, courseToSubmit);
+        console.log('updatedCourse', updatedCourse);
+
         fetchCourses();
+
         setCourseData((prev) =>
-          prev.map((course) => (course.id === newCourse.id ? { ...course, ...courseToSubmit } : course))
+          prev.map((course) =>
+            course.id === newCourse.id ? { ...course, ...updatedCourse } : course
+          )
         );
+
         toast.success("Course updated successfully!");
 
       } else {
-        const response = await axios.post(`/course`, courseToSubmit, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // const response = await axios.post(`/course`, courseToSubmit, {
+        //   headers: { Authorization: `Bearer ${token}` },
+        // });
+
+        const newCourseData = await createCourseApi(courseToSubmit);
         fetchCourses();
-        setCourseData((prev) => [...prev, response.data]);
+        setCourseData((prev) => [...prev, newCourseData]);
 
         toast.success("Course added successfully!");
       }

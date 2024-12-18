@@ -7,9 +7,6 @@ interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = () => {
-  // if (!isAuthenticated) {
-  //   return <Navigate to="/login" replace />;
-  // }
 
   return (
     <div className="flex h-screen">

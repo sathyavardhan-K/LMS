@@ -5,10 +5,15 @@ import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
+import { useDropzone } from "react-dropzone";
 import axios from "axios";
 import { ColDef } from "ag-grid-community";
-import { useDropzone } from "react-dropzone";
-
+import {
+  fetchCourseCategoryApi,
+  deleteCourseCategoryApi,
+  createCourseCategoryApi,
+  updateCourseCategoryApi,
+} from "@/api/courseCategoryApi";
 
 
 // TypeScript types for the component props
@@ -27,8 +32,6 @@ interface CourseCategoryData {
 
 const getToken = () => localStorage.getItem("authToken");
 
-
-
 const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   const [categoryData, setCategoryData] = useState<CourseCategoryData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -38,7 +41,8 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<CourseCategoryData | null>(null);
+  const [categoryToDelete, setCategoryToDelete] =
+    useState<CourseCategoryData | null>(null);
   const [newCategory, setNewCategory] = useState<CourseCategoryData>({
     id: 0,
     courseCategory: "",
@@ -77,17 +81,10 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   });
 
   // Fetch course categories
-  const fetchCourseCategory = async () => {
-    const token = getToken();
-    if (!token) {
-      toast.error("You must be logged in to view course categories.");
-      return;
-    }
-
+  const fetchCourseCategoryData = async () => {
     try {
-      const response = await axios.get(`/coursecategory`);
-      console.log("Get course Categories", response.data);
-      setCategoryData(response.data.category || []);
+      const courseCategoryData = await fetchCourseCategoryApi();
+      setCategoryData(courseCategoryData);
     } catch (error) {
       console.error("Failed to fetch course categories", error);
       toast.error("Failed to fetch course categories. Please try again later.");
@@ -97,7 +94,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   };
 
   useEffect(() => {
-    fetchCourseCategory();
+    fetchCourseCategoryData();
   }, []);
 
   const addNewRow = () => {
@@ -117,40 +114,35 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       setCategoryToDelete(category);
       setIsDeleteModalOpen(true);
     }
-  };  
+  };
 
-  const handleDeleteCategory = async () => {
-      if (!categoryToDelete) return;
-  
-      const token = getToken();
-      if (!token) {
-        toast.error("You must be logged in to delete a category.");
-        return;
-      }
-  
-      try {
-        await axios.delete(`/coursecategory/${categoryToDelete.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setCategoryData((prev) => prev.filter((category) => category.id !== categoryToDelete.id));
-        toast.success("Category deleted successfully!");
-      } catch (error) {
-        console.error("Failed to delete category", error);
-        toast.error("Failed to delete the category. Please try again later.");
-      } finally {
-        setIsDeleteModalOpen(false);
-        setCategoryToDelete(null);
-      }
-    };
-
-    const handleCancelDelete = () => {
+  const handleDeleteCategoryData = async () => {
+    if (!categoryToDelete) return;
+    try {
+      await deleteCourseCategoryApi(categoryToDelete.id);
+      setCategoryData((prev) =>
+        prev.filter((category) => category.id !== categoryToDelete.id)
+      );
+      toast.success("Category deleted successfully!");
+    } catch (error) {
+      console.error("Failed to delete category", error);
+      toast.error("Failed to delete the category. Please try again later.");
+    } finally {
       setIsDeleteModalOpen(false);
       setCategoryToDelete(null);
-    };
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setCategoryToDelete(null);
+  };
 
   const editCategory = (data: any) => {
-    const categoryToEdit = categoryData.find((category) => category.id === data.id);
-    console.log('categoryToEdit',categoryToEdit);
+    const categoryToEdit = categoryData.find(
+      (category) => category.id === data.id
+    );
+    console.log("categoryToEdit", categoryToEdit);
     if (categoryToEdit) {
       setEditing(true);
       setNewCategory(categoryToEdit);
@@ -188,25 +180,17 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
         toast.error("Category ID is missing.");
         return;
       }
-  
-      try {
-        const response = await axios.put(`/coursecategory/${newCategory.id}`, newCategory, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
-         // Assuming the backend returns the updated category data
-        const updatedCategory = response.data; // assuming the response contains the updated category
-        console.log('updatedCategory',updatedCategory);
-  
-        // Assuming the backend returns the updated category data
+      try {
+        const updatedCategory = await updateCourseCategoryApi(
+          newCategory.id,
+          newCategory
+        );
         setCategoryData((prev) =>
           prev.map((category) =>
             category.id === newCategory.id ? updatedCategory : category
           )
         );
-
         toast.success("Category updated successfully!");
       } catch (error) {
         console.error("Failed to update category", error);
@@ -214,15 +198,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       }
     } else {
       try {
-        const response = await axios.post(`/coursecategory`, newCategory, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        // Assuming the response returns the newly created category
-        const newCategoryData = response.data; // Assuming this is the new category from the API
-
+        const newCategoryData = await createCourseCategoryApi(newCategory);
         setCategoryData((prev) => [...prev, newCategoryData]);
         toast.success("Category added successfully!");
       } catch (error) {
@@ -231,17 +207,26 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       }
     }
 
-     // Refresh the component by fetching updated data
-    await fetchCourseCategory();
+    // Refresh the component by fetching updated data
+    await fetchCourseCategoryData();
     handleModalClose();
   };
-  
 
   useEffect(() => {
     setColDefs([
       { headerName: "Category Name", field: "courseCategory", editable: false },
-      { headerName: "Description", field: "description", editable: false, width: 460 },
-      { headerName: "Category Image", field: "courseCategoryImg", editable: false, width: 320 },
+      {
+        headerName: "Description",
+        field: "description",
+        editable: false,
+        width: 460,
+      },
+      {
+        headerName: "Category Image",
+        field: "courseCategoryImg",
+        editable: false,
+        width: 320,
+      },
       {
         headerName: "Actions",
         field: "actions",
@@ -270,7 +255,9 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     <div className="flex-1 p-4 mt-10 ml-24">
       <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
         <div className="flex flex-col">
-          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Course Categories</h2>
+          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">
+            Course Categories
+          </h2>
           <p className="text-sm font-metropolis font-medium">Manage course categories easily.</p>
         </div>
         <Button
@@ -281,7 +268,10 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
         </Button>
       </div>
 
-      <div className="ag-theme-quartz text-left" style={{ height: "calc(100vh - 180px)", width: "88%" }}>
+      <div
+        className="ag-theme-quartz text-left"
+        style={{ height: "calc(100vh - 180px)", width: "88%" }}
+      >
         <AgGridReact
           rowSelection="multiple"
           suppressRowClickSelection
@@ -289,7 +279,12 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
           loading={loading}
           columnDefs={colDefs}
           rowData={categoryData}
-          defaultColDef={{ editable, sortable: true, filter: true, resizable: true }}
+          defaultColDef={{
+            editable,
+            sortable: true,
+            filter: true,
+            resizable: true,
+          }}
           animateRows
         />
       </div>
@@ -299,10 +294,11 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
           <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
             <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
             <p className="font-metropolis font-medium">
-              Are you sure you want to delete the category {" "}
+              Are you sure you want to delete the category{" "}
               <strong>
                 {categoryToDelete?.courseCategory?.charAt(0).toUpperCase() +
-                  categoryToDelete?.courseCategory?.slice(1).toLowerCase() || "this category"}
+                  categoryToDelete?.courseCategory?.slice(1).toLowerCase() ||
+                  "this category"}
               </strong>
               ?
             </p>
@@ -315,7 +311,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                 Cancel
               </Button>
               <Button
-                onClick={handleDeleteCategory}
+                onClick={handleDeleteCategoryData}
                 className="bg-custom-gradient-btn text-white px-4 py-2 
                 transition-all duration-500 ease-in-out 
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
@@ -327,11 +323,12 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
         </div>
       )}
 
-
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-            <h2 className="text-xl font-metropolis font-semibold mb-4">{editing ? "Edit Category" : "Add New Category"}</h2>
+            <h2 className="text-xl font-metropolis font-semibold mb-4">
+              {editing ? "Edit Category" : "Add New Category"}
+            </h2>
             <form>
               <div className="mb-4">
                 <label className="block font-metropolis font-medium">Category Name</label>
@@ -339,7 +336,12 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   value={newCategory.courseCategory}
-                  onChange={(e) => setNewCategory({ ...newCategory, courseCategory: e.target.value })}
+                  onChange={(e) =>
+                    setNewCategory({
+                      ...newCategory,
+                      courseCategory: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="mb-4">
@@ -348,7 +350,12 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   value={newCategory.description}
-                  onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                  onChange={(e) =>
+                    setNewCategory({
+                      ...newCategory,
+                      description: e.target.value,
+                    })
+                  }
                 />
               </div>
               <div className="mb-4">
@@ -367,6 +374,18 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                     </p>
                   )}
                 </div>
+                <label className="block font-medium">Image Path</label>
+                <input
+                  type="text"
+                  className="w-full border rounded p-2"
+                  value={newCategory.courseCategoryImg}
+                  onChange={(e) =>
+                    setNewCategory({
+                      ...newCategory,
+                      courseCategoryImg: e.target.value,
+                    })
+                  }
+                />
               </div>
               <div className="flex justify-end space-x-2">
                 <Button

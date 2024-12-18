@@ -20,8 +20,8 @@ import PermissionRoles from './components/Tables/permissionTables';
 
 import ProtectedRoute from './components/protectedRoute';
 
-import TraineeHelloWorld from './components/Trainee/TraineeHelloWorld';
-import UserSettings from './components/Trainee/userSettings';
+import TraineeHome from './components/Trainee/traineeHome';
+import UserSettings from './components/Trainee/UserSettings/userSettings';
 import CourseDetails from './components/Trainee/CourseDetails/courseDetails';
 import courseData from './components/Trainee/data.json';
 import { Category, Course } from './components/Trainee/types';
@@ -127,7 +127,7 @@ const App: React.FC = () => {
           element={
             <ProtectedRoute allowedRoles={['trainee']}>
               <>
-                <TraineeHelloWorld isAuthenticated={isAuthenticated} />
+                <TraineeHome isAuthenticated={isAuthenticated} />
                 <Footer />
               </>
             </ProtectedRoute>
@@ -171,7 +171,6 @@ const App: React.FC = () => {
             )
           }
         />
-
 
         {/* Login Route */}
         <Route

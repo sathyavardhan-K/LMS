@@ -2,8 +2,9 @@ import { Button } from "../../components/ui/button";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { createUserApi  } from "@/api/userApi";
+import { fetchRolesApi } from "@/api/roleApi";
 
 interface Role {
   id: number;
@@ -37,12 +38,9 @@ const AddUser = () => {
         return;
       }
       try {
-        const response = await axios.get("/roles", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }); // Endpoint to fetch roles
-        setRoles(response.data); // Store the roles
+        const roleResponse = await fetchRolesApi();
+        console.log("roleResponse", roleResponse);
+        setRoles(roleResponse); // Store the roles
       } catch (error) {
         toast.error("Failed to load roles.");
       }
@@ -95,7 +93,6 @@ const AddUser = () => {
     return newErrors;
   };
 
-  
   // Handle form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -111,13 +108,11 @@ const AddUser = () => {
     }
     const userData = { ...newUser };
     try {
-      const response = await axios.post("/users", userData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const createdUser = response.data.newUser;
-      console.log(createdUser);
+      const response = await createUserApi(userData);
+      console.log("Response for creating the new user", response);
+
+      const createdUser = response.newUser;
+
       toast.success("User added successfully!");
       // Redirect based on the user's role
       if (createdUser.role && createdUser.role.name === "Admin") {
