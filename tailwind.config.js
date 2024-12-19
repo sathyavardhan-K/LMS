@@ -73,7 +73,8 @@ module.exports = {
   		},
 		  backgroundImage: {
             'custom-gradient': 'linear-gradient(to right, #50bc8e, #3fa7d2, #4e6db4)',
-			'custom-gradient-btn': 'linear-gradient(to left, #50bc8e, #3fa7d2, #4e6db4)'
+			'custom-gradient-btn': 'linear-gradient(to left, #50bc8e, #3fa7d2, #4e6db4)',
+			'settings-gradient': 'linear-gradient(90deg, rgba(158,197,243,1) 13%, rgba(253,237,192,1) 65%)'
           },
   	}
   },

@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 import { ColDef } from "ag-grid-community";
 import {
   fetchCourseCategoryApi,

@@ -1,6 +1,6 @@
 import apiClient from './apiClient';
 
-const userId = localStorage.getItem('userId');
+// const userId = localStorage.getItem('userId');
 
 // Create a new course
 export const createUserApi = async (userData: any) => {
@@ -25,21 +25,24 @@ export const fetchUsersApi = async()=>{
   }
 }
 
-//Read all users
-export const fetchUsersbyIdApi = async()=>{
-  try{
-    const response = await apiClient.get('/users/`${userId}');
-    console.log('resp', response.data);
-    return response.data || [];
-  } catch(error){
-    console.error('Failed to fetch users', error);
+
+// Read user by id
+export const fetchUsersbyIdApi = async (userId: number) => {
+  try {
+    const response = await apiClient.get(`/users/${userId}`);
+    console.log('resp', response.data.user);
+    return response.data.user || [];
+  } catch (error) {
+    console.error('Failed to fetch user by ID', error);
     throw error;
   }
-}
+};
+
 
 // Update an existing user
 export const updateUserApi = async (userId: number, userData: any) => {
   try{
+    console.log("userrDataaa", userData);
     const response = await apiClient.put(`/users/${userId}`, userData);
     return response.data;
   }catch(error){

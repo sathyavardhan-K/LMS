@@ -3,7 +3,7 @@ import teqcertify from '../../../images/teq-logo-1.png';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gray-800 text-white py-8">
+    <footer className="bg-black text-white py-8">
       <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         {/* Footer Logo */}
         <div className="mb-2 bg-white rounded-lg">

@@ -13,6 +13,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, children 
 
   // Check if the user's role is in the allowed roles
   if (!allowedRoles.includes(userRole || '')) {
+    console.log('hello role',userRole)
     return <Navigate to="/login" replace />;
   }
 

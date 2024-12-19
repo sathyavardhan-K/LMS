@@ -21,7 +21,7 @@ import PermissionRoles from './components/Tables/permissionTables';
 import ProtectedRoute from './components/protectedRoute';
 
 import TraineeHome from './components/Trainee/traineeHome';
-import UserSettings from './components/Trainee/UserSettings/userSettings';
+import UserSettings from './components/Trainee/ProfileSettings/profileSettings';
 import Footer from './components/Trainee/Footer/Footer';
 
 
@@ -50,6 +50,8 @@ const App: React.FC = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
 
+          console.log('Response', response.data);
+
           if (response.data && response.data.user) {
             const user = response.data.user;
             const fullName = `${user.firstName} ${user.lastName}`;
@@ -57,9 +59,9 @@ const App: React.FC = () => {
             setIsAuthenticated(true);
             setUserRole(user.role);
             setUserName(fullName);
-
+            console.log('rollee', user);
             localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('role', user.role);
+            // localStorage.setItem('role', user.role);
             localStorage.setItem('userName', fullName);
           }
         } catch (error) {
@@ -124,8 +126,7 @@ const App: React.FC = () => {
           }
         >
           {/* Child Routes */}
-          <Route path="settings" element={<UserSettings />} />
-          {/* <Route path="course/:courseId" element={<CourseDetails courses={allCourses} />} /> */}
+          <Route path="settings" element={<UserSettings isAuthenticated={isAuthenticated}/>} />
         </Route>
 
 
