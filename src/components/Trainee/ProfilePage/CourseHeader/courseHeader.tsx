@@ -51,10 +51,10 @@ const CourseHeader: React.FC = () => {
           </div>
         </div>
         <div className="flex flex-row items-end justify-end gap-4">
-          <div className="p-3 rounded-2xl bg-violet-700 text-white transition-all cursor-pointer">
+          <div className="p-3 rounded-xl bg-violet-700 text-white transition-all cursor-pointer">
             <span className="font-semibold">Share</span>
           </div>
-          <div className="flex flex-row items-center gap-2 p-3 rounded-2xl border bg-violet-700 text-white transition-all cursor-pointer">
+          <div className="flex flex-row items-center gap-2 p-3 rounded-xl border bg-violet-700 text-white transition-all cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               height="24px"

@@ -35,10 +35,10 @@ const Mainbar: React.FC = () => {
         >
           Overview
         </div>
-          <div className="font-semibold gap-2 p-3 rounded-2xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Author</span></div>
-          <div className="font-semibold gap-2 p-3 rounded-2xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>FAQ</span></div>
-          <div className="font-semibold gap-2 p-3 rounded-2xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Announcements</span></div>
-          <div className="font-semibold gap-2 p-3 rounded-2xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Reviews</span></div>
+          <div className="font-semibold gap-2 p-3 rounded-xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Author</span></div>
+          <div className="font-semibold gap-2 p-3 rounded-xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>FAQ</span></div>
+          <div className="font-semibold gap-2 p-3 rounded-xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Announcements</span></div>
+          <div className="font-semibold gap-2 p-3 rounded-xl border hover:bg-violet-600 hover:text-white transition-all cursor-pointer"><span>Reviews</span></div>
         </div>
 
         {/* Dynamic Content */}

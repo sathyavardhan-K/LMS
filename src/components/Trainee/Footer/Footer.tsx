@@ -1,13 +1,12 @@
 import React from 'react';
-import teqcertify from '../../../images/teq-logo-1.png';
 
 const Footer: React.FC = () => {
   return (
     <footer className="bg-gray-100 py-8 text-gray-700">
       <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
         {/* Footer Logo */}
-        <div className="mb-2 bg-white rounded-lg">
-          <img src={teqcertify} alt="teqcertify" className="w-full h-28" />
+        <div className="mb-2">
+          <img src="https://teqcertify.com/wp-content/uploads/2024/11/2-300x100.png" alt="teqcertify" className="w-52 h-16" />
         </div>
 
         {/* Footer Links */}

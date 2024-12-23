@@ -95,7 +95,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
           className="hover:scale-105 transform transition"
         >
           <img
-            src="https://teqcertify.com/wp-content/uploads/2024/12/Untitled-design-3.png"
+            src="https://teqcertify.com/wp-content/uploads/2024/11/2-300x100.png"
             alt="teqcertify"
             className="w-52 h-16"
           />
