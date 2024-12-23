@@ -298,11 +298,11 @@ import { useNavigate } from "react-router-dom";
 import CameraIcon from "../../../icons/photo-camera.png";
 
 
-interface ProfileSettingsProps {
-  isAuthenticated: boolean;
-}
+// interface ProfileSettingsProps {
+//   isAuthenticated: boolean;
+// }
 
-const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isAuthenticated }) => {
+const ProfileSettings: React.FC = () => {
   const [userData, setUserData] = useState<any>(null);
   const [originalData, setOriginalData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -436,7 +436,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isAuthenticated }) =>
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-lg w-[1400px] mt-20 mb-20 font-metropolis">
+    <div className="bg-white p-8 rounded-lg shadow-lg w-[1400px] mt-20 mb-20 font-metropolis ml-[140px]">
       <div className="bg-settings-gradient p-16 rounded-lg">
         <h2 className="text-2xl font-semibold text-center">Profile Settings</h2>
       </div>
@@ -473,7 +473,7 @@ const ProfileSettings: React.FC<ProfileSettingsProps> = ({ isAuthenticated }) =>
           <h1 className="text-lg font-semibold">{`${userData.firstName} ${userData.lastName}`}</h1>
           <h2 className="text-sm text-gray-600">{userData.email}</h2>
           <h3 className="text-sm text-gray-500">
-            Registered ID: {userData.id}
+            ID: {userData.id}
           </h3>
         </div>
       </div>
