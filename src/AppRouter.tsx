@@ -18,6 +18,7 @@ import TraineeHome from "./components/Trainee/traineeHome";
 import UserSettings from "./components/Trainee/ProfileSettings/profileSettings";
 import CoursePage from "./components/Trainee/ProfilePage/CoursePage/coursePage";
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
+import BatchTable from "./components/Tables/batchTable";
 
 interface AppRouterProps {
   isAuthenticated: boolean;
@@ -53,6 +54,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
           <Route path="course-category" element={<CourseCategoryTable />} />
           <Route path="manage-roles-and-permissions" element={<ManageRoles />} />
           <Route path="manage-permissions" element={<PermissionRoles />} />
+          <Route path="batch-management" element={<BatchTable />} />
           <Route path="allUsers" element={<AllUsers />}>
             <Route path=":roleName" element={<UserManagement />} />
             <Route path="add-user" element={<AddUser />} />
