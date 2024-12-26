@@ -305,7 +305,6 @@ import { fetchUsersbyIdApi, updateUserApi } from "../../../api/userApi"; // Impo
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import CameraIcon from "../../../icons/photo-camera.png";
-import { useDropzone, Accept } from "react-dropzone"; // Import useDropzone for file uploading
 
 const ProfileSettings: React.FC = () => {
   const [userData, setUserData] = useState<any>(null);
@@ -372,23 +371,24 @@ const ProfileSettings: React.FC = () => {
     });
   };
 
-  const onDrop = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]; // Get the first uploaded file (handle single file upload)
-    setUploadedFile(file);
+  // Handle file input change event
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (file) {
+      setUploadedFile(file);
 
-    // Convert the file to base64 with prefix
-    convertFileToBase64(file).then((base64) => {
-      // Set the newCategory state with the base64 image string
-      setNewCategory({ ...newCategory, courseCategoryImg: base64 });
-      setImagePreview(base64); // Update the image preview
-    });
+      // Convert the file to base64 with prefix
+      convertFileToBase64(file).then((base64) => {
+        setNewCategory({ ...newCategory, courseCategoryImg: base64 }); // Store base64 string in state
+        setImagePreview(base64); // Update the image preview
+        // Update userData with the new profile picture
+        setUserData((prevData: any) => ({
+          ...prevData,
+          profilePic: base64, // Assuming `profilePic` is the key for the image
+        }));
+      });
+    }
   };
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop, // Attach the onDrop function to handle file uploads
-    accept: { "image/*": [] }, // Accept image files only
-    multiple: false, // Allow only a single file to be uploaded
-  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -451,20 +451,20 @@ const ProfileSettings: React.FC = () => {
         <div className="w-[150px] h-[150px]">
           <div className="w-full h-full max-w-[150px] max-h-[150px] bg-[#84c6e9] rounded-full relative">
             <div
-              className={`w-full h-full rounded-full ${imagePreview ? "bg-cover bg-center" : "bg-[#6eafd4]"}`}
-              style={imagePreview ? { backgroundImage: `url(${imagePreview})` } : {}}
+              className={`w-full h-full rounded-full ${imagePreview || userData?.profilePic ? "bg-cover bg-center" : "bg-[#6eafd4]"}`}
+              style={{
+                backgroundImage: `url(${imagePreview || userData?.profilePic})`,
+              }}
             >
               <div
                 className="bg-white w-[50px] h-[50px] rounded-full absolute bottom-0 right-0 hover:bg-gray-300 border-2 border-black shadow-sm"
-                {...getRootProps()} // Attach dropzone props here
               >
                 <input
-                  {...getInputProps()} // Attach file input props here
                   className="opacity-0 w-[50px] h-[50px] absolute z-10"
                   type="file"
                   name="profilePic"
                   accept="image/*"
-                  onChange={handleChange} // Handle file selection
+                  onChange={handleFileChange} // Handle file selection
                   disabled={!isEditMode} // Disable the file input unless in edit mode
                 />
                 <label className="text-center text-white w-[50px] h-[50px] flex justify-center items-center cursor-pointer">
@@ -483,6 +483,7 @@ const ProfileSettings: React.FC = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
+
         {/* First Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
@@ -536,6 +537,32 @@ const ProfileSettings: React.FC = () => {
         </div>
 
         {/* Third Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <div>
+            <label className="block text-sm font-medium">Date of Joining</label>
+            <input
+              type="date"
+              name="date of joining"
+              value={formatDate(userData?.dateOfJoining || "")}
+              onChange={handleChange}
+              disabled={true}
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium">Account Status</label>
+            <input
+              type="text"
+              name="accountStatus"
+              value={userData?.accountStatus || ""}
+              onChange={handleChange}
+              disabled={true}
+              className="mt-1 block w-full p-3 border border-gray-300 rounded-lg"
+            />
+          </div>
+        </div>
+
+        {/* Four Row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div>
             <label className="block text-sm font-medium">Qualification</label>
