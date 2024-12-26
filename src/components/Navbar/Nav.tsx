@@ -181,11 +181,9 @@
 
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaBars, FaSearch } from "react-icons/fa";
+import { FaBars } from "react-icons/fa";
 import { NavLink } from "react-router-dom";
 import { MdPersonAddAlt1 } from "react-icons/md";
-import GWClogoLight from '../../images/gwc_light.svg';
-import teqcertify from '../../images/teq-logo-2.png';
 
 interface NavProps {
   isAuthenticated: boolean;

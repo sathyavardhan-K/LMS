@@ -47,8 +47,6 @@ const App: React.FC = () => {
     (category) => category.courses
   );
 
-  console.log(allCourses);
-
   useEffect(() => {
     const authenticateWithToken = async () => {
       const token = localStorage.getItem('authToken');
@@ -69,7 +67,7 @@ const App: React.FC = () => {
             setUserName(fullName);
 
             localStorage.setItem('isAuthenticated', 'true');
-            localStorage.setItem('role', user.role);
+            // localStorage.setItem('role', user.role);
             localStorage.setItem('userName', fullName);
           }
         } catch (error) {

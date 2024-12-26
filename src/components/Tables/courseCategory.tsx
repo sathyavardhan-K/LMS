@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
 import { useDropzone } from "react-dropzone";
-import axios from "axios";
 import { ColDef } from "ag-grid-community";
 import {
   fetchCourseCategoryApi,
@@ -66,25 +65,57 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
 
     return newErrors;
   }
-  const onDrop = (acceptedFiles: File[]) => {
-    const file = acceptedFiles[0]; // Only handle single file upload
-    setUploadedFile(file);
-  
-    // Update the newCategory state with the file name or path (optional)
-    setNewCategory({ ...newCategory, courseCategoryImg: file.name });
-  };
-  
+
+
+ // Convert file to base64 with prefix
+const convertFileToBase64 = (file: File) => {
+  const reader = new FileReader();
+  return new Promise<string>((resolve, reject) => {
+    reader.onloadend = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file); // Convert file to base64 with prefix
+  });
+};
+
+console.log(newCategory.courseCategoryImg); 
+
+
+// When an image is dropped/uploaded
+const onDrop = (acceptedFiles: File[]) => {
+  const file = acceptedFiles[0]; // Handle single file upload
+  setUploadedFile(file);
+
+  // Convert the file to base64
+  convertFileToBase64(file).then((base64) => {
+    setNewCategory({ ...newCategory, courseCategoryImg: base64 });
+  });
+};
+
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { "image/*": [] },
     multiple: false, // Single file upload
   });
 
-  // Fetch course categories
   const fetchCourseCategoryData = async () => {
     try {
       const courseCategoryData = await fetchCourseCategoryApi();
-      setCategoryData(courseCategoryData);
+      const imageUrls = courseCategoryData
+        .map((category: { courseCategoryImg: string }) => {
+          if (category.courseCategoryImg) {
+            // No need to convert base64, it can be used directly
+            return category.courseCategoryImg; 
+          }
+          return null; // Handle missing images
+        });
+
+      setCategoryData(
+        courseCategoryData.map((category: any, index: string | number) => ({
+          ...category,
+          courseCategoryImg: imageUrls[index] || null, // Assign base64 string
+        }))
+      );
     } catch (error) {
       console.error("Failed to fetch course categories", error);
       toast.error("Failed to fetch course categories. Please try again later.");
@@ -99,6 +130,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
 
   const addNewRow = () => {
     setEditing(false);
+    setUploadedFile(null)
     setNewCategory({
       id: 0,
       courseCategory: "",
@@ -224,9 +256,27 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
       {
         headerName: "Category Image",
         field: "courseCategoryImg",
+        cellRenderer: (params: any) => {
+          const imageUrl = params.value; // Can be base64 string or object URL
+          return imageUrl ? (
+            <img
+              src={imageUrl}
+              alt="Category"
+              style={{
+                width: "100px",
+                height: "70px",
+                objectFit: "cover",
+                borderRadius: "8px",
+              }}
+            />
+          ) : (
+            "No Image"
+          );
+        },
         editable: false,
         width: 320,
       },
+      
       {
         headerName: "Actions",
         field: "actions",
@@ -369,7 +419,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                   {uploadedFile ? (
                     <p className="text-green-600 font-metropolis font-semibold mt-6">{uploadedFile.name}</p>
                   ) : (
-                    <p className="text-gray-400 font-semibold mt-4">
+                    <p className="text-gray-400 font-semibold">
                       Drag & drop a file here, or click to select one
                     </p>
                   )}

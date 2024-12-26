@@ -144,55 +144,55 @@ const AddUser = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
-        <h2 className="text-xl font-bold mb-4">Add New User</h2>
+        <h2 className="text-xl font-metropolis font-semibold mb-4">Add New User</h2>
         <form>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block font-medium">First Name</label>
+              <label className="block font-metropolis font-medium">First Name</label>
               <input
                 type="text"
                 name="firstName"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.firstName}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <label className="block font-medium">Last Name</label>
+              <label className="block font-metropolis font-medium">Last Name</label>
               <input
                 type="text"
                 name="lastName"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.lastName}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <label className="block font-medium">Email</label>
+              <label className="block font-metropolis font-medium">Email</label>
               <input
                 type="email"
                 name="email"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.email}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <label className="block font-medium">Phone Number</label>
+              <label className="block font-metropolis font-medium">Phone Number</label>
               <input
                 type="tel"
                 name="phoneNumber"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.phoneNumber}
                 onChange={handleInputChange}
               />
             </div>
             <div className="relative">
-              <label className="block font-medium">Password</label>
+              <label className="block font-metropolis font-medium">Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.password}
                 onChange={handleInputChange}
               />
@@ -209,20 +209,20 @@ const AddUser = () => {
               </button>
             </div>
             <div>
-              <label className="block font-medium">Date of Joining</label>
+              <label className="block font-metropolis font-medium">Date of Joining</label>
               <input
                 type="date"
                 name="dateOfJoining"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.dateOfJoining}
                 onChange={handleInputChange}
               />
             </div>
             <div>
-              <label className="block font-medium">Role</label>
+              <label className="block font-metropolis font-medium">Role</label>
               <select
                 name="roleId"
-                className="w-full border rounded p-2"
+                className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                 value={newUser.roleId}
                 onChange={handleInputChange}
               >
@@ -238,14 +238,17 @@ const AddUser = () => {
           <div className="flex justify-end space-x-2 mt-4">
             <Button
               onClick={() => navigate("/admin/allUsers")}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700"
+              className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
             >
               Cancel
             </Button>
             <Button
               type="button"
               onClick={handleFormSubmit}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
             >
               Submit
             </Button>
