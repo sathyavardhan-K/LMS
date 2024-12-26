@@ -18,6 +18,8 @@ export default defineConfig({
 
       "/permissions": "http://localhost:5050",
 
+      "/batch": "http://localhost:5050",
+
       "/users": "http://localhost:5050"
       
     },
