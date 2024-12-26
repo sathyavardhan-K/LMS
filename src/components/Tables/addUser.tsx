@@ -5,12 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { createUserApi  } from "@/api/userApi";
 import { fetchRolesApi } from "@/api/roleApi";
-
+ 
 interface Role {
   id: number;
   name: string;
 }
-
+ 
 const AddUser = () => {
   const [newUser, setNewUser] = useState({
     firstName: "",
@@ -25,10 +25,10 @@ const AddUser = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
+ 
   // Get auth token from localStorage
   const getToken = () => localStorage.getItem("authToken");
-
+ 
   // Fetch roles on component mount
   useEffect(() => {
     const fetchRoles = async () => {
@@ -47,7 +47,7 @@ const AddUser = () => {
     };
     fetchRoles();
   }, []);
-
+ 
   const validateFields = () => {
     const newErrors: Record<string, string> = {};
     // Basic field validations
@@ -84,7 +84,7 @@ const AddUser = () => {
           "Password must contain at least one special character.";
       }
     }
-
+ 
     setErrors(newErrors);
     // Show errors in toast notifications
     Object.entries(newErrors).forEach(([field, message]) => {
@@ -92,7 +92,7 @@ const AddUser = () => {
     });
     return newErrors;
   };
-
+ 
   // Handle form submission
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -110,9 +110,9 @@ const AddUser = () => {
     try {
       const response = await createUserApi(userData);
       console.log("Response for creating the new user", response);
-
+ 
       const createdUser = response.newUser;
-
+ 
       toast.success("User added successfully!");
       // Redirect based on the user's role
       if (createdUser.role && createdUser.role.name === "Admin") {
@@ -129,7 +129,7 @@ const AddUser = () => {
       toast.error("Failed to create user. Please try again later.");
     }
   };
-
+ 
   // Handle input changes
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -140,7 +140,7 @@ const AddUser = () => {
       [name]: value,
     }));
   };
-
+ 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[600px]">
@@ -238,7 +238,7 @@ const AddUser = () => {
           <div className="flex justify-end space-x-2 mt-4">
             <Button
               onClick={() => navigate("/admin/allUsers")}
-              className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+              className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
             >
               Cancel
@@ -246,8 +246,8 @@ const AddUser = () => {
             <Button
               type="button"
               onClick={handleFormSubmit}
-              className="bg-custom-gradient-btn text-white px-4 py-2 
-                transition-all duration-500 ease-in-out 
+              className="bg-custom-gradient-btn text-white px-4 py-2
+                transition-all duration-500 ease-in-out
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
             >
               Submit
@@ -258,5 +258,5 @@ const AddUser = () => {
     </div>
   );
 };
-
+ 
 export default AddUser;
