@@ -1,11 +1,9 @@
-// src/components/Dashboard.tsx
-
 import React from 'react';
 
 const Dashboard: React.FC = () => {
   return (
     <div className="dashboard m-10">
-      <h2 className="text-2xl font-bold mb-4">Welcome to the LMS Dashboard!</h2>
+      <h2 className="text-2xl font-bold mb-12">Welcome to the LMS Dashboard!</h2>
       
       {/* Grid of cards with hover effect */}
       <div className="grid grid-cols-3 gap-4">
