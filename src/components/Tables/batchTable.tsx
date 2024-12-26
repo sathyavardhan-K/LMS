@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Button } from "../../components/ui/button";
-import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
@@ -29,6 +28,7 @@ interface BatchData {
 // Column definitions type from AG-Grid
 import { ColDef } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
+import { format } from "date-fns";
 
 // Helper to get token
 const getToken = () => localStorage.getItem("authToken");
@@ -50,9 +50,6 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     endDate: "",
   });
 
-  // New state to handle the visibility of the date pickers
-  const [showStartDatePicker, setShowStartDatePicker] = useState(false);
-  const [showEndDatePicker, setShowEndDatePicker] = useState(false);
 
   const validateFields = () => {
     const newErrors: Record<string, string> = {};
@@ -145,11 +142,21 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     console.log("Batch to edit:", batchToEdit);
     if (batchToEdit) {
       setEditing(true);
-      setNewBatch(batchToEdit);
+      setNewBatch({
+        ...batchToEdit,
+        // Convert dates to the format required by <input type="date">
+        startDate: batchToEdit.startDate
+          ? format(new Date(batchToEdit.startDate), "yyyy-MM-dd")
+          : "",
+        endDate: batchToEdit.endDate
+          ? format(new Date(batchToEdit.endDate), "yyyy-MM-dd")
+          : "",
+      });
       setIsModalOpen(true);
     }
   };
-
+  
+  
   const handleModalClose = () => {
     setIsModalOpen(false);
     setNewBatch({
@@ -227,9 +234,19 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         headerName: "Start Date",
         field: "startDate",
         editable: false,
+        valueFormatter: (params) =>
+          params.value ? format(new Date(params.value), "yyyy-MM-dd") : "",
+
         width: 200,
       },
-      { headerName: "End Date", field: "endDate", editable: false, width: 200 },
+      {
+        headerName: "End Date",
+        field: "endDate",
+        editable: false,
+        valueFormatter: (params) =>
+          params.value ? format(new Date(params.value), "yyyy-MM-dd") : "",
+        width: 200,
+      },
       {
         headerName: "Actions",
         field: "actions",
@@ -302,120 +319,108 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] max-w-full">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[900px] max-w-full">
             <h2 className="text-xl font-metropolis font-semibold mb-4 text-center">
               {editing ? "Edit Batch" : "Add New Batch"}
             </h2>
             <form>
-              <div className="mb-4">
-                <label className="block font-metropolis font-medium mb-2">
-                  Batch Name
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                  value={newBatch.batchName}
-                  onChange={(e) =>
-                    setNewBatch({ ...newBatch, batchName: e.target.value })
-                  }
-                />
-                {errors.batchName && (
-                  <span className="text-red-500 text-sm">
-                    {errors.batchName}
-                  </span>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-metropolis font-medium mb-2">
-                  Shift Time
-                </label>
-                <input
-                  type="text"
-                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                  value={newBatch.shiftTime}
-                  onChange={(e) =>
-                    setNewBatch({ ...newBatch, shiftTime: e.target.value })
-                  }
-                />
-                {errors.shiftTime && (
-                  <span className="text-red-500 text-sm">
-                    {errors.shiftTime}
-                  </span>
-                )}
-              </div>
-
-              <div className="mb-4">
-                <label className="block font-metropolis font-medium mb-2">
-                  Start Date
-                </label>
-                <div>
+              {/* Row for Batch Name and Shift Time */}
+              <div className="flex justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <label className="block font-metropolis font-medium mb-2">
+                    Batch Name
+                  </label>
                   <input
                     type="text"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                    value={newBatch.batchName}
+                    onChange={(e) =>
+                      setNewBatch({ ...newBatch, batchName: e.target.value })
+                    }
+                  />
+                  {errors.batchName && (
+                    <span className="text-red-500 text-sm">
+                      {errors.batchName}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex-1">
+                  <label className="block font-metropolis font-medium mb-2">
+                    Shift Time
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                    value={newBatch.shiftTime}
+                    onChange={(e) =>
+                      setNewBatch({ ...newBatch, shiftTime: e.target.value })
+                    }
+                  />
+                  {errors.shiftTime && (
+                    <span className="text-red-500 text-sm">
+                      {errors.shiftTime}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Row for Start Date and End Date */}
+              <div className="flex justify-between gap-4 mb-4">
+                <div className="flex-1">
+                  <label className="block font-metropolis font-medium mb-2">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
                     className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newBatch.startDate}
-                    onClick={() => setShowStartDatePicker(true)}
+                    onChange={(e) =>
+                      setNewBatch({ ...newBatch, startDate: e.target.value })
+                    }
                   />
-                  {showStartDatePicker && (
-                    <DayPicker
-                      selected={newBatch.startDate ? new Date(newBatch.startDate) : undefined}
-                      onDayClick={(date) =>
-                        setNewBatch({
-                          ...newBatch,
-                          startDate: date.toISOString().split("T")[0],
-                        })
-                      }
-                    />
+                  {errors.startDate && (
+                    <span className="text-red-500 text-sm">
+                      {errors.startDate}
+                    </span>
                   )}
                 </div>
-                {errors.startDate && (
-                  <span className="text-red-500 text-sm">
-                    {errors.startDate}
-                  </span>
-                )}
-              </div>
 
-              <div className="mb-4">
-                <label className="block font-metropolis font-medium mb-2">
-                  End Date
-                </label>
-                <div>
+                <div className="flex-1">
+                  <label className="block font-metropolis font-medium mb-2">
+                    End Date
+                  </label>
                   <input
-                    type="text"
+                    type="date"
                     className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newBatch.endDate}
-                    onClick={() => setShowEndDatePicker(true)}
+                    onChange={(e) =>
+                      setNewBatch({ ...newBatch, endDate: e.target.value })
+                    }
                   />
-                  {showEndDatePicker && (
-                    <DayPicker
-                      selected={newBatch.endDate ? new Date(newBatch.endDate) : undefined}
-                      onDayClick={(date) =>
-                        setNewBatch({
-                          ...newBatch,
-                          endDate: date.toISOString().split("T")[0],
-                        })
-                      }
-                    />
+                  {errors.endDate && (
+                    <span className="text-red-500 text-sm">
+                      {errors.endDate}
+                    </span>
                   )}
                 </div>
-                {errors.endDate && (
-                  <span className="text-red-500 text-sm">
-                    {errors.endDate}
-                  </span>
-                )}
               </div>
 
+              {/* Action Buttons */}
               <div className="flex justify-between">
                 <Button
                   type="button"
-                  className="bg-gray-500 text-white"
+                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+             rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                   onClick={handleModalClose}
                 >
                   Cancel
                 </Button>
                 <Button
                   type="button"
-                  className="bg-yellow-500 text-white"
+                  className="bg-custom-gradient-btn text-white px-4 py-2 
+            transition-all duration-500 ease-in-out 
+           rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                   onClick={handleFormSubmit}
                 >
                   {editing ? "Update Batch" : "Add Batch"}
@@ -435,17 +440,20 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
             <p className="mb-4 text-center">
               Are you sure you want to delete this batch?
             </p>
-            <div className="flex justify-between">
+            <div className="flex gap-4 justify-end mt-5">
               <Button
                 type="button"
-                className="bg-gray-500 text-white"
+                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 onClick={closeDeleteModal}
               >
                 Cancel
               </Button>
               <Button
                 type="button"
-                className="bg-red-500 text-white"
+                className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 onClick={deleteBatchData}
               >
                 Delete

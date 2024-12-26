@@ -27,8 +27,8 @@ export const fetchBatchApi = async () => {
 export const updateBatchApi = async (id: number, updatedBatch: any) => {
   try {
     const response = await apiClient.put(`/batch/${id}`, updatedBatch);
-    console.log("update batch", response.data.Batches);
-    return response.data.Batches;
+    console.log("update batch", response.data);
+    return response.data;
   } catch (error) {
     console.error('Error updating Batch', error);
     throw error;
