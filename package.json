@@ -30,6 +30,7 @@
     "axios": "^1.7.8",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "d3": "^7.9.0",
     "datatables.net": "^2.1.8",
     "date-fns": "^2.30.0",
     "jquery": "^3.7.1",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@types/d3": "^7.4.3",
     "@types/datatables.net": "^1.10.28",
     "@types/jquery": "^3.5.32",
     "@types/js-cookie": "^3.0.6",
