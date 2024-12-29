@@ -20,7 +20,7 @@ import CoursePage from "./components/Trainee/ProfilePage/CoursePage/coursePage";
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
 import BatchTable from "./components/Tables/batchTable";
 import CourseModuleTable from "./components/Tables/courseModule";
-import BatchScheduleTable from "./components/Tables/manageBatchModule";
+import BatchScheduleTable from "./components/Tables/manageBatchScheduleModule";
 
 interface AppRouterProps {
   isAuthenticated: boolean;

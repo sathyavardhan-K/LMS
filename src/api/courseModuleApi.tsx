@@ -26,6 +26,7 @@ export const fetchCourseModuleApi = async () => {
 // Update an existing course category
 export const updateCourseModuleApi = async (id: number, updatedCourseModule: any) => {
   try {
+    console.log('updatedCourseModule', updatedCourseModule);
     const response = await apiClient.put(`/module/${id}`, updatedCourseModule);
     return response.data;
   } catch (error) {

@@ -22,6 +22,8 @@ export default defineConfig({
 
       "/module": "http://localhost:5050",
 
+      "/batchModuleSchedule": "http://localhost:5050",
+
       "/users": "http://localhost:5050"
       
     },
