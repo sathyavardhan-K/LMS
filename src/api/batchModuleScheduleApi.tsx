@@ -15,8 +15,8 @@ export const createBatchModuleScheduleApi = async (newBatchModuleSchedule: any) 
 export const fetchBatchModuleScheduleApi = async () => {
   try {
     const response = await apiClient.get('/batchModuleSchedule');
-    console.log('response', response.data);
-    return response.data || [];
+    console.log('response', response.data.data);
+    return response.data.data || [];
   } catch (error) {
     console.error('Failed to fetch course module', error);
     throw error;
@@ -28,7 +28,8 @@ export const updateBatchModuleScheduleApi = async (id: number, newBatchModuleSch
   try {
     console.log('updatedCourseModule', newBatchModuleSchedule);
     const response = await apiClient.put(`/batchModuleSchedule/${id}`, newBatchModuleSchedule);
-    return response.data;
+    console.log('response', response.data.data);
+    return response.data.data;
   } catch (error) {
     console.error('Error updating course module', error);
     throw error;

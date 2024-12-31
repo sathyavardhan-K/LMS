@@ -1,7 +1,12 @@
 import React from "react";
-import { HashRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import {
+  HashRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import Home from "./components/Home";
-import Nav from "./components/Navbar/Nav"; 
+import Nav from "./components/Navbar/Nav";
 import Footer from "./components/Trainee/Footer/Footer";
 import { Toaster } from "sonner";
 import Dashboard from "./components/Dashboard";
@@ -20,7 +25,6 @@ import CoursePage from "./components/Trainee/ProfilePage/CoursePage/coursePage";
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
 import BatchTable from "./components/Tables/batchTable";
 import CourseModuleTable from "./components/Tables/courseModule";
-import BatchScheduleTable from "./components/Tables/manageBatchScheduleModule";
 import BatchModuleScheduleTable from "./components/Tables/manageBatchScheduleModule";
 
 interface AppRouterProps {
@@ -38,7 +42,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
 }) => {
   return (
     <Router>
-        <Nav
+      <Nav
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
       />
@@ -55,11 +59,17 @@ const AppRouter: React.FC<AppRouterProps> = ({
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseTable />} />
           <Route path="course-category" element={<CourseCategoryTable />} />
-          <Route path="manage-roles-and-permissions" element={<ManageRoles />} />
+          <Route
+            path="manage-roles-and-permissions"
+            element={<ManageRoles />}
+          />
           <Route path="manage-permissions" element={<PermissionRoles />} />
           <Route path="batch-management" element={<BatchTable />} />
           <Route path="course-module" element={<CourseModuleTable />} />
-          <Route path="manage-batch-schedules" element={<BatchModuleScheduleTable/>} />
+          <Route
+            path="manage-batch-schedules"
+            element={<BatchModuleScheduleTable/>}
+          />
           <Route path="allUsers" element={<AllUsers />}>
             <Route path=":roleName" element={<UserManagement />} />
             <Route path="add-user" element={<AddUser />} />

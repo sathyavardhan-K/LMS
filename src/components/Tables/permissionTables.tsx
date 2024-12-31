@@ -51,10 +51,12 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
 
   const validateFields = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (!newPermission.action) newErrors.action = 'action is required.';
-    if (!newPermission.description) newErrors.description = 'description is required.';
-    if (!newPermission.groupName) newErrors.groupName = 'Group name must be required';
+
+    if (!newPermission.action) newErrors.action = "action is required.";
+    if (!newPermission.description)
+      newErrors.description = "description is required.";
+    if (!newPermission.groupName)
+      newErrors.groupName = "Group name must be required";
 
     setErrors(newErrors);
 
@@ -63,7 +65,7 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
     });
 
     return newErrors;
-  }
+  };
   // Fetch permissions
   const fetchPermissionsData = async () => {
     try {
@@ -263,8 +265,12 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
     <div className="flex-1 p-4 mt-10 ml-24">
       <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
         <div className="flex flex-col">
-          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Permissions</h2>
-          <p className="text-sm font-metropolis font-medium">Manage permissions easily.</p>
+          <h2 className="text-2xl font-metropolis font-semibold tracking-wide">
+            Permissions
+          </h2>
+          <p className="text-sm font-metropolis font-medium">
+            Manage permissions easily.
+          </p>
         </div>
         <Button
           onClick={addNewPermission}
@@ -303,7 +309,9 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
             </h2>
             <form>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Action</label>
+                <label className="block font-metropolis font-medium">
+                  Action
+                </label>
                 <input
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
@@ -317,7 +325,9 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Description</label>
+                <label className="block font-metropolis font-medium">
+                  Description
+                </label>
                 <input
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
@@ -331,7 +341,9 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Group Name</label>
+                <label className="block font-metropolis font-medium">
+                  Group Name
+                </label>
                 <input
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
@@ -366,14 +378,17 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
         </div>
       )}
 
-      {deleteModalOpen && permissionToDelete &&(
+      {deleteModalOpen && permissionToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
-            <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
+            <h2 className="text-xl font-metropolis font-semibold mb-4">
+              Confirm Delete
+            </h2>
             <p className="mb-4 font-metropolis font-medium">
               Are you sure you want to delete the permission{" "}
-              {" "}
-              <strong>{permissionToDelete?.action?.charAt(0).toUpperCase() + permissionToDelete?.action?.slice(1).toLowerCase()}
+              <strong>
+                {permissionToDelete?.action?.charAt(0).toUpperCase() +
+                  permissionToDelete?.action?.slice(1).toLowerCase()}
               </strong>
               ?
             </p>
