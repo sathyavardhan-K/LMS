@@ -21,6 +21,7 @@ import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
 import BatchTable from "./components/Tables/batchTable";
 import CourseModuleTable from "./components/Tables/courseModule";
 import BatchScheduleTable from "./components/Tables/manageBatchScheduleModule";
+import BatchModuleScheduleTable from "./components/Tables/manageBatchScheduleModule";
 
 interface AppRouterProps {
   isAuthenticated: boolean;
@@ -58,7 +59,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
           <Route path="manage-permissions" element={<PermissionRoles />} />
           <Route path="batch-management" element={<BatchTable />} />
           <Route path="course-module" element={<CourseModuleTable />} />
-          <Route path="manage-batch-schedules" element={<BatchScheduleTable />} />
+          <Route path="manage-batch-schedules" element={<BatchModuleScheduleTable/>} />
           <Route path="allUsers" element={<AllUsers />}>
             <Route path=":roleName" element={<UserManagement />} />
             <Route path="add-user" element={<AddUser />} />

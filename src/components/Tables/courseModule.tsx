@@ -221,7 +221,16 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
   };
 
   const handleDeleteCourseModule = async () => {
-    if (!moduleToDelete) return;
+    if (!moduleToDelete) {
+      toast.error('No module selected for deletion');
+      return;
+    }
+
+    const token = getToken();
+        if (!token) {
+          toast.error("You must be logged in to delete a course.");
+          return;
+        }
 
     try {
       await deleteCourseModuleApi(moduleToDelete.id);
@@ -270,13 +279,16 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
               <div className="flex justify-end space-x-2 mt-4">
                 <Button
                   onClick={() => setModuleToDelete(null)}
-                  className="bg-gray-300 text-black hover:bg-gray-400 px-4 py-2 rounded"
+                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleDeleteCourseModule}
-                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 rounded"
+                  className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   Delete
                 </Button>
@@ -309,16 +321,16 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96">
-              <h2 className="text-xl font-metropolis font-semibold mb-4">
+              <h2 className="text-xl font-metropolis font-semibold mb-4 text-center">
                 {editing ? "Edit Module" : "Add New Module"}
               </h2>
               <form>
                 <div className="mb-4">
-                  <label className="block font-metropolis font-medium">
+                  <label className="block font-metropolis font-medium mb-2">
                     Course
                   </label>
                   <select
-                    className="w-full border rounded p-2 font-metropolis text-gray-700"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newModule.courseId}
                     onChange={(e) =>
                       setNewModule({
@@ -341,12 +353,12 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
                   )}
                 </div>
                 <div className="mb-4">
-                  <label className="block font-metropolis font-medium">
+                  <label className="block font-metropolis font-medium mb-2">
                     Module Name
                   </label>
                   <input
                     type="text"
-                    className="w-full border rounded p-2 font-metropolis text-gray-700"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newModule.moduleName}
                     onChange={(e) =>
                       setNewModule({
@@ -362,11 +374,11 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
                   )}
                 </div>
                 <div className="mb-4">
-                  <label className="block font-metropolis font-medium">
+                  <label className="block font-metropolis font-medium mb-2">
                     Description
                   </label>
                   <textarea
-                    className="w-full border rounded p-2 font-metropolis text-gray-700"
+                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                     value={newModule.moduleDescription}
                     onChange={(e) =>
                       setNewModule({
@@ -384,13 +396,16 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
                 <div className="flex justify-end space-x-4">
                   <Button
                     onClick={handleFormSubmit}
-                    className="bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded"
+                    className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                   >
                     {editing ? "Update" : "Create"}
                   </Button>
                   <Button
                     onClick={handleModalClose}
-                    className="bg-gray-300 text-black hover:bg-gray-400 px-4 py-2 rounded"
+                    className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                   >
                     Cancel
                   </Button>
