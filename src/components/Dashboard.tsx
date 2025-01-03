@@ -1,39 +1,39 @@
 import React from "react";
 import TreeChart from "./chart";
 
-interface TreeNode {
-  name: string;
-  children?: TreeNode[];
-}
+// interface TreeNode {
+//   name: string;
+//   children?: TreeNode[];
+// }
 
-const data: TreeNode = {
-  name: "Root",
-  children: [
-    {
-      name: "Child 1",
-      children: [
-        {
-          name: "Grandchild 1",
-          children: [
-            { name: "Great-Grandchild 1" },
-            { name: "Great-Grandchild 2" },
-          ],
-        },
-        { name: "Grandchild 2" },
-      ],
-    },
-    {
-      name: "Child 2",
-      children: [
-        { name: "Grandchild 3" },
-        {
-          name: "Grandchild 4",
-          children: [{ name: "Great-Grandchild 3" }],
-        },
-      ],
-    },
-  ],
-};
+// const data: TreeNode = {
+//   name: "Root",
+//   children: [
+//     {
+//       name: "Child 1",
+//       children: [
+//         {
+//           name: "Grandchild 1",
+//           children: [
+//             { name: "Great-Grandchild 1" },
+//             { name: "Great-Grandchild 2" },
+//           ],
+//         },
+//         { name: "Grandchild 2" },
+//       ],
+//     },
+//     {
+//       name: "Child 2",
+//       children: [
+//         { name: "Grandchild 3" },
+//         {
+//           name: "Grandchild 4",
+//           children: [{ name: "Great-Grandchild 3" }],
+//         },
+//       ],
+//     },
+//   ],
+// };
 
 const Dashboard: React.FC = () => {
   return (
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      <TreeChart data={data} />;
+      {/* <TreeChart data={data} /> */}
     </>
   );
 };

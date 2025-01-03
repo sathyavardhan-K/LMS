@@ -19,8 +19,8 @@ const Sidebar: React.FC = () => {
   const location = useLocation(); // To determine the current active route
 
   return (
-    <div className="flex h-screen text-gray-700">
-      <div className="flex flex-col w-64 bg-purple-100 shadow-lg">
+    <div className="flex h-full min-h-0 text-gray-700">
+      <div className="flex flex-col w-80 bg-purple-100 shadow-lg overflow-y-auto">
         <nav className="flex-1 p-4 space-y-2">
           {/* Admin Section with collapsible menu */}
           <button
@@ -127,8 +127,8 @@ const Sidebar: React.FC = () => {
         </nav>
       </div>
     </div>
-  );
-};
+  )
+}
 
 type SidebarButtonProps = {
   icon: React.ReactNode;

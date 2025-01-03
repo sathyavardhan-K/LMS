@@ -27,7 +27,7 @@
 import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./ProfilePage/SideBar/sideBar";
-import CoursePage from "./ProfilePage/CoursePage/coursePage";
+import CoursePage from "./ProfilePage/EnrolledCourses/CoursePage/coursePage";
 
 interface TraineeProb {
   isAuthenticated: boolean;
@@ -51,7 +51,8 @@ const TraineeHome: React.FC<TraineeProb> = () => {
         )}
 
         {/* Main Content Area */}
-        <main className={`flex-1 ${isSettingsPage ? "p-8" : "p-4"}`}>
+        <main className={`flex-1 ${isSettingsPage ? "p-8" : "p-4"} bg-white`}>
+          
          <Outlet />
         </main>
       </div>

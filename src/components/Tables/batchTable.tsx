@@ -525,7 +525,7 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   {editing ? "Update Batch" : "Create Batch"}
-                </Button>
+                </Button> 
                 <Button
                   onClick={handleModalClose}
                   className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 

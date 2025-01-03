@@ -5,27 +5,33 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "sonner";
+
 import Home from "./components/Home";
 import Nav from "./components/Navbar/Nav";
 import Footer from "./components/Trainee/Footer/Footer";
-import { Toaster } from "sonner";
-import Dashboard from "./components/Dashboard";
 import Login from "./components/Navbar/Login";
-import CourseTable from "./components/Tables/courseTables";
+import ProtectedRoute from "./components/protectedRoute";
+
+import Dashboard from "./components/Dashboard";
 import UserManagement from "./components/Tables/userManagement";
+import CourseTable from "./components/Tables/courseTables";
 import AddUser from "./components/Tables/addUser";
 import AllUsers from "./components/Tables/allUsers";
 import CourseCategoryTable from "./components/Tables/courseCategory";
 import ManageRoles from "./components/Tables/rolesTables";
 import PermissionRoles from "./components/Tables/permissionTables";
-import ProtectedRoute from "./components/protectedRoute";
-import TraineeHome from "./components/Trainee/traineeHome";
-import UserSettings from "./components/Trainee/ProfileSettings/profileSettings";
-import CoursePage from "./components/Trainee/ProfilePage/CoursePage/coursePage";
-import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
 import BatchTable from "./components/Tables/batchTable";
 import CourseModuleTable from "./components/Tables/courseModule";
 import BatchModuleScheduleTable from "./components/Tables/manageBatchScheduleModule";
+
+import TraineeHome from "./components/Trainee/traineeHome";
+import UserSettings from "./components/Trainee/ProfileSettings/profileSettings";
+import CoursePage from "./components/Trainee/ProfilePage/EnrolledCourses/CoursePage/coursePage";
+import TraineeDashboard from "./components/Trainee/ProfilePage/Dashboard/DashboardPage/dashboardPage";
+
+import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
+
 
 interface AppRouterProps {
   isAuthenticated: boolean;
@@ -86,6 +92,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
           }
         >
           <Route path="courses" element={<CoursePage />} />
+          <Route path="dashboard" element={<TraineeDashboard />} />
           <Route path="settings" element={<UserSettings />} />
         </Route>
 

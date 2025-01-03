@@ -68,8 +68,9 @@ module.exports = {
 			text: "#212529", // Dark text for light mode
 			accent: "#0d6efd", // Accent color for buttons/links
 			},
-
 			'custom-dark': '#DDC3E7', 
+			'baby-powder': '#EBCFF2',
+			
   		},
 		  backgroundImage: {
             'custom-gradient': 'linear-gradient(to right, #50bc8e, #3fa7d2, #4e6db4)',

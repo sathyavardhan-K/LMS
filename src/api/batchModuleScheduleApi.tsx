@@ -28,8 +28,8 @@ export const updateBatchModuleScheduleApi = async (id: number, newBatchModuleSch
   try {
     console.log('updatedCourseModule', newBatchModuleSchedule);
     const response = await apiClient.put(`/batchModuleSchedule/${id}`, newBatchModuleSchedule);
-    console.log('response', response.data.data);
-    return response.data.data;
+    console.log('response batch module', response.data.data);
+    return response.data;
   } catch (error) {
     console.error('Error updating course module', error);
     throw error;
