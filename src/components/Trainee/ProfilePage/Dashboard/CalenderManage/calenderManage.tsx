@@ -9,10 +9,10 @@ const CalenderManage: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-4 rounded shadow ml-40 -mt-[80px] border-2 border-gray-200">
+    <div className="bg-white p-2 ml-40 -mt-[70px]">
       <h2 className="text-lg font-bold">Calendar Management</h2>
       <p>Plan your schedule effectively!</p>
-      <div className="border rounded-lg p-4 h-80 w-80 mt-4 ml-[60px]">
+      <div className="border rounded-lg p-3 h-80 w-88 mt-4 ml-[30px] items-center justify-center flex">
         <DayPicker
           selected={selectedDate || undefined}
           onDayClick={handleDateChange}

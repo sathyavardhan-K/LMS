@@ -32,7 +32,6 @@ import TraineeDashboard from "./components/Trainee/ProfilePage/Dashboard/Dashboa
 
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
 
-
 interface AppRouterProps {
   isAuthenticated: boolean;
   setIsAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
@@ -74,7 +73,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
           <Route path="course-module" element={<CourseModuleTable />} />
           <Route
             path="manage-batch-schedules"
-            element={<BatchModuleScheduleTable/>}
+            element={<BatchModuleScheduleTable />}
           />
           <Route path="allUsers" element={<AllUsers />}>
             <Route path=":roleName" element={<UserManagement />} />

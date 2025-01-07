@@ -23,6 +23,18 @@ export const fetchCourseApi = async () => {
   }
 };
 
+// Read a course by id
+export const fetchCourseByIdApi = async (courseId: number) => {
+  try {
+    console.log("fetchCourseByIdApi", courseId);
+    const response = await apiClient.get(`/course/${courseId}`);
+    return response || [];
+  } catch (error) {
+    console.error('Failed to fetch course by id', error);
+    throw error;
+  }
+};
+
 // Update an existing course
 export const updateCourseApi = async (courseId: number, courseData: any) => {
   try {

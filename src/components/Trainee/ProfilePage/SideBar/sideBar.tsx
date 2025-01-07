@@ -16,8 +16,8 @@ const Sidebar: React.FC = () => {
             <div
               className={`flex flex-col-2 py-3 px-4 rounded-lg transition mb-5 gap-4 cursor-pointer ${
                 isActiveDashboard
-                  ? "bg-violet-500 text-white"
-                  : "bg-white hover:bg-violet-500 hover:text-white text-slate-600"
+                  ? "bg-[#4e6db4] text-white" 
+                  : "bg-white hover:bg-[#4e6db497] hover:text-white text-slate-600"
               }`}
             >
               <svg
@@ -37,8 +37,8 @@ const Sidebar: React.FC = () => {
             <div
               className={`flex flex-col-2 py-3 px-4 rounded-lg transition mb-5 gap-4 cursor-pointer ${
                 isActiveCourses
-                  ? "bg-violet-500 text-white"
-                  : "bg-white hover:bg-violet-500 hover:text-white text-slate-600"
+                  ? "bg-[#4d78b8] text-white"
+                  : "bg-white hover:bg-[#7598D0] hover:text-white text-slate-600"
               }`}
             >
               <svg
@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
           </Link>
 
           <Link to="/trainee/code-challenges">
-            <div className="flex flex-col-2 py-3 px-4 rounded-lg hover:bg-violet-500 transition text-slate-600 bg-white mb-5 hover:text-white gap-4">
+            <div className="flex flex-col-2 py-3 px-4 rounded-lg hover:bg-[#7598D0] transition text-slate-600 bg-white mb-5 hover:text-white gap-4">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 height="24px"

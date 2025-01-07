@@ -11,6 +11,7 @@ import {
   ClipboardList,
   BookOpen,
   Calendar,
+  GraduationCap
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -122,6 +123,14 @@ const Sidebar: React.FC = () => {
                 to="/admin/manage-batch-schedules"
                 isActive={location.pathname === "/admin/manage-batch-schedules"}
               />
+
+              <SidebarButton
+                icon={<GraduationCap />} // You can replace this with a different icon
+                label="Enrolled Courses"
+                to="/admin/enrolled-courses"
+                isActive={location.pathname === "/admin/enrolled-courses"}
+                />
+
             </div>
           )}
         </nav>
