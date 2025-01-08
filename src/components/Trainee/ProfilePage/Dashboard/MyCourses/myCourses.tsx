@@ -32,7 +32,7 @@ const courses = [
 
 const MyCourses: React.FC = () => {
   return (
-    <div className="bg-gray-200 p-6 rounded shadow w-[800px] mx-auto">
+    <div className="bg-[#8ce1bc] p-6 rounded shadow w-[800px] mx-auto h-[500px]">
       <h2 className="text-lg font-bold">My Courses</h2>
       {/* <p className="text-sm text-gray-600 mb-6">View and manage your enrolled courses.</p> */}
 

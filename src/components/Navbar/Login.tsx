@@ -4,6 +4,7 @@ import axios from "axios";
 
 import Loginpic from "../../images/login&signup.png";
 import LoadingSpinner from "../loadingSpinner";
+import Lms from "../../images/LMS.avif"
 
 interface LoginProps {
   setIsAuthenticated: (auth: boolean) => void;
@@ -50,7 +51,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
       } else if (user.role === "trainer") {
         navigate("/trainer");
       } else if (user.role === "trainee") {
-        navigate("/trainee");
+        navigate("/trainee/dashboard");
       } else {
         navigate("/"); // Default or fallback route
       }
@@ -64,7 +65,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
   return (
     <>
       {isLoading && <LoadingSpinner timeout={8000}/>} {/* Show spinner when loading */}
-      <div className="flex items-center justify-center min-h-screen bg-yellow-50">
+      <div className="flex items-center justify-center min-h-screen bg-green-100">
         {/* Card Container */}
         <div className="relative flex flex-col bg-white space-x-5 rounded-2xl shadow-md md:max-w-[1000px] md:min-w[800px] md:flex-row md:space-y-0 -mt-[50px]">
           <div className="flex flex-col pb-5">
@@ -79,7 +80,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
             </h2>
             <form onSubmit={handleLogin}>
               <input
-                className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+                className="mx-16 my-3 px-5 py-3 border border-slate-300 rounded-2xl"
                 type="email"
                 placeholder="Email"
                 value={email}
@@ -87,7 +88,7 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
                 required
               />
               <input
-                className="mx-16 my-5 px-5 py-3 border border-slate-300 rounded-2xl"
+                className="mx-16 my-3 px-5 py-3 border border-slate-300 rounded-2xl"
                 type="password"
                 placeholder="Password"
                 value={password}
@@ -100,12 +101,12 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
               )}
 
               <div className="flex flex-col pb-10 md:flex-row m-2 space-y-5 mx-20">
-                <p className="md:flex-1 my-3 cursor-pointer text-xl font-bold text-yellow-500 hover:text-yellow-700 duration-200 mt-6">
+                <p className="md:flex-1 my-3 cursor-pointer text-xl font-bold text-green-500 hover:text-green-700 duration-200 mt-6">
                   Forgot your password?
                 </p>
 
                 <button
-                  className="md:flex-1 rounded-lg py-5 transition duration-200 text-slate-50 bg-yellow-400 shadow-sm font-semibold hover:translate-y-[-5px] hover:shadow-md hover:shadow-yellow-400"
+                  className="md:flex-1 rounded-lg py-5 transition duration-200 text-slate-50 bg-green-400 shadow-sm font-semibold hover:translate-y-[-5px] hover:shadow-md hover:shadow-green-400"
                   type="submit"
                 >
                   Log in
@@ -114,8 +115,8 @@ const Login: React.FC<LoginProps> = ({ setIsAuthenticated, setUserName }) => {
             </form>
           </div>
           <img
-            src={Loginpic}
-            className="object-cover max-w-[400px] hidden rounded-md md:block"
+            src={Lms}
+            className="object-cover max-w-[500px] hidden rounded-md md:block"
             alt="Summer beach"
           />
         </div>

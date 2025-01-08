@@ -89,7 +89,7 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
               : role === "trainer"
               ? "/trainer"
               : role === "trainee"
-              ? "/trainee"
+              ? "/trainee/dashboard"
               : "/"
           }
           className="hover:scale-105 transform transition"

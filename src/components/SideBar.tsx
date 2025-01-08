@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="flex h-full min-h-0 text-gray-700">
-      <div className="flex flex-col w-80 bg-purple-100 shadow-lg overflow-y-auto">
+      <div className="flex flex-col w-80 bg-green-200 shadow-lg overflow-y-auto">
         <nav className="flex-1 p-4 space-y-2">
           {/* Admin Section with collapsible menu */}
           <button
@@ -57,7 +57,7 @@ const Sidebar: React.FC = () => {
 
             {/* Glow Effect (Optional Decoration) */}
             <div
-              className={`absolute inset-0 rounded-md bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 opacity-0 transition-opacity duration-300 ${
+              className={`absolute inset-0 rounded-md bg-custom-gradient opacity-0 transition-opacity duration-300 ${
                 isAdminOpen ? "opacity-20" : ""
               }`}
             ></div>
@@ -156,7 +156,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
     to={to}
     className={`group flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
       isActive
-        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+        ? "bg-custom-gradient text-white shadow-md"
         : "bg-white hover:bg-gray-100 border border-gray-200"
     }`}
   >

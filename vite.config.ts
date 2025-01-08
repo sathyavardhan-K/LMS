@@ -24,7 +24,9 @@ export default defineConfig({
 
       "/batchModuleSchedule": "http://localhost:5050",
 
-      "/users": "http://localhost:5050"
+      "/users": "http://localhost:5050",
+
+      "/submissions": "https://api.judge0.com"
       
     },
   },

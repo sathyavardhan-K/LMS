@@ -31,6 +31,7 @@ import CoursePage from "./components/Trainee/ProfilePage/EnrolledCourses/CourseP
 import TraineeDashboard from "./components/Trainee/ProfilePage/Dashboard/DashboardPage/dashboardPage";
 
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
+import CodeExecutor from "./components/Trainee/ProfilePage/CodeChallenges/codeExecutor";
 
 interface AppRouterProps {
   isAuthenticated: boolean;
@@ -92,6 +93,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
         >
           <Route path="courses" element={<CoursePage />} />
           <Route path="dashboard" element={<TraineeDashboard />} />
+          <Route path="code-challenges" element={<CodeExecutor/>}/>
           <Route path="settings" element={<UserSettings />} />
         </Route>
 

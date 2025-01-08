@@ -9,10 +9,13 @@ const CalenderManage: React.FC = () => {
   };
 
   return (
-    <div className="bg-white p-2 ml-40 -mt-[70px]">
-      <h2 className="text-lg font-bold">Calendar Management</h2>
-      <p>Plan your schedule effectively!</p>
-      <div className="border rounded-lg p-3 h-80 w-88 mt-4 ml-[30px] items-center justify-center flex">
+    <div className="bg-white p-2 ml-40">
+      <div className="ml-8">
+        <div className="border rounded-lg p-3 h-96 w-80 ml-[30px] items-center justify-center flex flex-col mt-5">
+          <h2 className="text-lg font-bold mt-3 text-slate-800">Calendar Management</h2>
+          <p>Plan your schedule effectively!</p>
+       
+
         <DayPicker
           selected={selectedDate || undefined}
           onDayClick={handleDateChange}
@@ -20,10 +23,12 @@ const CalenderManage: React.FC = () => {
         />
       </div>
       {selectedDate && (
-        <p className="mt-4 text-sm text-gray-700">
+        <p className="mt-4 text-sm text-gray-700 ml-9">
           Selected Date: {selectedDate.toDateString()}
         </p>
       )}
+      </div>
+
     </div>
   );
 };

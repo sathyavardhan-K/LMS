@@ -1,10 +1,10 @@
 // DashboardPage.tsx
 import React from "react";
 import DashboardHeader from "../DashboardHeader/dashboardHeader";
-import NewCourses from "../NewCourses/newCourses";
+import Assignments from "../HomeWork/assignments";
 import MyCourses from "../MyCourses/myCourses";
 import CalenderManage from "../CalenderManage/calenderManage";
-import Homework from "../HomeWorkProgress/homeWork";
+import NewCourses from "../NewCourse/newCourse";
 
 const DashboardPage: React.FC = () => {
   return (
@@ -14,10 +14,10 @@ const DashboardPage: React.FC = () => {
 
       {/* Grid Layout */}
       <div className="grid grid-cols-2 gap-5 p-4">
-        <NewCourses />
+        <Assignments />
         <CalenderManage />
         <MyCourses />
-        <Homework />
+        <NewCourses />
       </div>
     </>
   );
