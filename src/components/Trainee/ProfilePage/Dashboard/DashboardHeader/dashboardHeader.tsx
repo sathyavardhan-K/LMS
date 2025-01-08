@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import Time from "@/images/clock.png"; // Time image
-import Result from "@/images/result.png"; // Result image
+
 import CompletedCourse from "@/images/online-course.png"; // Completed course image
-import Points from "@/images/reward.png";
-import Badges from "@/images/medal.png";
-import Code from "@/images/programming.png";
-import ProductivityChart from "./productivityChart";
+
+import RemainingClasses from "@/images/hourglass.png";
+import Attendance from "@/images/time-management.png";
+
+import CalenderManage from "../CalenderManage/calenderManage";
 
 const DashboardHeader: React.FC = () => {
   const [name, setName] = useState<string | null>(
@@ -13,46 +13,64 @@ const DashboardHeader: React.FC = () => {
   );
 
   return (
-    <div className="bg-slate-700 p-6 text-white w-[1300px] rounded-lg ml-4 grid grid-cols-2 md:grid-cols-2">
-      <div>
-        <h1 className="text-xl font-bold">Welcome back, Mr. {name}</h1>
-        <p className="mb-4">
-          Track, manage, and forecast your platform performance
-        </p>
+    <div className="grid grid-cols-2 mt-4">
+      <div className="bg-slate-700 p-6 text-white w-[800px] h-[450px] rounded-lg ml-4 grid grid-cols-2 md:grid-cols-1">
+        <div>
+          <h1 className="text-xl font-bold">Welcome back, Mr. {name}</h1>
+          <p className="mb-4">
+            Track, manage, and forecast your platform performance
+          </p>
 
-        <div className="mt-6">
-          <h2 className="text-lg font-semibold">Overview</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-4">
-            {/* Time Spent Section */}
-            <OverviewCard imgSrc={Time} title="Time spent" value="2 h" />
+          <div className="mt-10">
+            <h2 className="text-lg font-semibold">Overview</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 mt-4">
+              {/* Completed Courses Section */}
+              <OverviewCard
+                imgSrc={CompletedCourse}
+                title="Module Completed"
+                value="2"
+              />
 
-            {/* Test Results Section */}
-            <OverviewCard imgSrc={Result} title="Test Results" value="80%" />
+              {/* Attedance Section */}
+              <OverviewCard
+                imgSrc={Attendance}
+                title="Attendance"
+                value="10 Days"
+              />
 
-            {/* Completed Courses Section */}
-            <OverviewCard
-              imgSrc={CompletedCourse}
-              title="Course Completed"
-              value="2"
-            />
-
-            {/* Points Section */}
-            <OverviewCard imgSrc={Points} title="Points" value="901" />
-
-            {/* Badges Section */}
-            <OverviewCard imgSrc={Badges} title="Badges" value="10" />
-
-            {/* Code Section*/}
-            <OverviewCard imgSrc={Code} title="Code" value="20" />
+              {/* Remaining Classes */}
+              <OverviewCard
+                imgSrc={RemainingClasses}
+                title="Remaining Classes"
+                value="30 Classes"
+              />
+            </div>
           </div>
+
+          {/* Upcoming Events Section */}
+          <div className="mt-10">
+            <h2 className="text-lg font-semibold mb-2">Upcoming Events</h2>
+            <ul className="text-sm space-y-5">
+              <li>
+                <span className="font-semibold">Assignment:</span> Assignment 1
+                <br />
+                <span className="text-gray-300">Due Date: 12th Jan 2025</span>
+              </li>
+              <li>
+                <span className="font-semibold">Class:</span> React
+                <br />
+                <span className="text-gray-300">
+                  Time: 10:00 AM to 12:00 PM
+                </span>
+              </li>
+            </ul>
+          </div>
+
+          
         </div>
       </div>
-
-      {/* Grid section for the chart */}
-      <div className="flex p-4 rounded-lg flex-col gap-1 ml-[250px]">
-        <h1 className="font-bold mt-2">Productivity</h1>
-        <p className="mb-5">Track your productivity and performance</p>
-        <ProductivityChart />
+      <div>
+        <CalenderManage />
       </div>
     </div>
   );
@@ -65,9 +83,9 @@ const OverviewCard: React.FC<{
 }> = ({ imgSrc, title, value }) => (
   <div className="grid grid-cols-2">
     <div className="flex items-center hover:bg-slate-400 hover:text-white p-4 rounded-lg w-[70px] bg-slate-200 text-black">
-      <img src={imgSrc} alt={title} className="w-10 h-10 mr-4" />
+      <img src={imgSrc} alt={title} className="w-10 h-10" />
     </div>
-    <div className="items-center justify-center">
+    <div className="-ml-5">
       <h3 className="font-semibold">{title}</h3>
       <p className="font-extrabold">{value}</p>
     </div>

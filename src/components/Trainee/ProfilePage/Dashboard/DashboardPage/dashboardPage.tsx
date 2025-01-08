@@ -5,6 +5,7 @@ import Assignments from "../HomeWork/assignments";
 import MyCourses from "../MyCourses/myCourses";
 import CalenderManage from "../CalenderManage/calenderManage";
 import NewCourses from "../NewCourse/newCourse";
+import Homework from "../HomeWork/assignments";
 
 const DashboardPage: React.FC = () => {
   return (
@@ -13,11 +14,14 @@ const DashboardPage: React.FC = () => {
       <DashboardHeader />
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-2 gap-5 p-4">
-        <Assignments />
-        <CalenderManage />
-        <MyCourses />
-        <NewCourses />
+      <div className="mt-10">
+
+        
+        
+        <div className="grid grid-cols-2 gap-5 p-4">
+          <MyCourses />
+          <NewCourses />
+        </div>
       </div>
     </>
   );
