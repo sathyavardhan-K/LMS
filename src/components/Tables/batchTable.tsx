@@ -3,6 +3,10 @@ import { Button } from "../../components/ui/button";
 import "react-day-picker/dist/style.css";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
+import { ColDef } from "ag-grid-community";
+import { AgGridReact } from "ag-grid-react";
+import { format } from "date-fns";
+import { fetchCourseApi } from "@/api/courseApi";
 
 import {
   fetchBatchApi,
@@ -10,6 +14,7 @@ import {
   updateBatchApi,
   deleteBatchApi,
 } from "@/api/batchApi";
+import { fetchUsersApi } from "@/api/userApi";
 
 // TypeScript types for the component props
 interface BatchTableProps {
@@ -20,15 +25,20 @@ interface BatchTableProps {
 interface BatchData {
   id: number;
   batchName: string;
-  shiftTime: string;
+  courseId: number;
+  courseName: string;
+  traineeId: number;
+  traineeName: string;
   startDate: string;
   endDate: string;
 }
 
-// Column definitions type from AG-Grid
-import { ColDef } from "ag-grid-community";
-import { AgGridReact } from "ag-grid-react";
-import { format } from "date-fns";
+interface batchOptions {
+  id: any;
+  courseName: any;
+  traineeName: any;
+}
+
 
 // Helper to get token
 const getToken = () => localStorage.getItem("authToken");
@@ -39,13 +49,19 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [course, setCourse] = useState<batchOptions[]>([]);
+  const [traineeName, setTraineeName] = useState<batchOptions[]>([])
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [batchToDelete, setBatchToDelete] = useState<BatchData | null>(null);
   const [newBatch, setNewBatch] = useState<BatchData>({
     id: 0,
     batchName: "",
-    shiftTime: "",
+    courseId: 0,
+    courseName: "",
+    traineeId: 0,
+    traineeName: "",
     startDate: "",
     endDate: "",
   });
@@ -55,7 +71,8 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     const newErrors: Record<string, string> = {};
 
     if (!newBatch.batchName) newErrors.batchName = "Batch name is required.";
-    if (!newBatch.shiftTime) newErrors.shiftTime = "Shift time is required.";
+    if (!newBatch.courseId) newErrors.courseId = "course is required.";
+    if (!newBatch.traineeId) newErrors.traineeId = "trainee is required.";
     if (!newBatch.startDate) newErrors.startDate = "Start date is required.";
     if (!newBatch.endDate) newErrors.endDate = "End date is required.";
 
@@ -70,12 +87,37 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 
   // Fetch batches
   const fetchBatchesData = async () => {
+    const token = getToken();
+    if (!token) {
+      toast.error("You must be logged in to view batches.");
+      return;
+    }
+
     try {
-      const batchesData = await fetchBatchApi();
-      console.log("Fetched batches:", batchesData);
-      setBatches(batchesData || []);
+      const response = await fetchBatchApi();
+
+      const batches = response.map((batch: any) => ({
+        id: batch.id,
+        batchName: batch.batchName,
+        courseId: batch.courseId || 0,
+        courseName: batch.course?.courseName || "Unknown", // This provides the course name
+        traineeId: batch.traineeId || 0,
+        traineeName: `${batch.trainee.firstName} ${batch.trainee.lastName}` || 'Unknown',
+        startDate: batch.startDate,
+        endDate: batch.endDate,
+      }));
+
+      const responseCourse = await fetchCourseApi();
+      const courses = responseCourse.map((course: any) => ({
+        id: course.id,
+        courseName: course.courseName
+      }));
+      setCourse(courses)
+
+      const responseUser = await fetchUsersApi();
+      setTraineeName(responseUser)
+      setBatches(batches)
     } catch (error) {
-      console.error("Failed to fetch batches", error);
       toast.error("Failed to fetch batches. Please try again later.");
     } finally {
       setLoading(false);
@@ -91,16 +133,33 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     setNewBatch({
       id: 0,
       batchName: "",
-      shiftTime: "",
+      courseId: 0,
+      courseName: "",
+      traineeId: 0,
+      traineeName: "",
       startDate: "",
       endDate: "",
     });
     setIsModalOpen(true);
   };
 
-  const deleteBatchData = async () => {
+  const confirmDeleteBatch = (data: BatchData) => {
+    const batch = batches.find((batch) => batch.id === data.id);
+    if (batch) {
+      setBatchToDelete(batch);
+      setIsDeleteModalOpen(true);
+    }
+  };
+
+  const handleDeleteBatch = async () => {
     if (!batchToDelete) {
       toast.error("No batch selected for deletion.");
+      return;
+    }
+
+    const token = getToken();
+    if (!token) {
+      toast.error("You must be logged in to delete a course.");
       return;
     }
 
@@ -108,11 +167,9 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
       await deleteBatchApi(batchToDelete.id);
 
       setBatches((prev) =>
-        prev.filter((batch) => batch.id !== batchToDelete.id)
-      );
+        prev.filter((batch) => batch.id !== batchToDelete.id));
       toast.success("Batch deleted successfully!");
     } catch (error) {
-      console.error("Failed to delete batch", error);
       toast.error("Failed to delete the batch. Please try again later.");
     } finally {
       setDeleteModalOpen(false);
@@ -120,22 +177,11 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     }
   };
 
-  const confirmDelete = (params: any) => {
-    if (!params || !params.data) {
-      console.error("Invalid data passed to confirmDelete:", params);
-      toast.error("Batch not found.");
-      return;
-    }
-
-    const batch = batches.find((b) => b.id === params.data.id);
-    if (batch) {
-      setBatchToDelete(batch);
-      setDeleteModalOpen(true);
-    } else {
-      console.error("Batch not found for deletion.");
-      toast.error("Batch not found.");
-    }
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+    setBatchToDelete(null);
   };
+
 
   const editBatch = (data: any) => {
     const batchToEdit = batches.find((batch) => batch.id === data.data.id);
@@ -144,7 +190,6 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
       setEditing(true);
       setNewBatch({
         ...batchToEdit,
-        // Convert dates to the format required by <input type="date">
         startDate: batchToEdit.startDate
           ? format(new Date(batchToEdit.startDate), "yyyy-MM-dd")
           : "",
@@ -153,16 +198,21 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
           : "",
       });
       setIsModalOpen(true);
+    } else {
+      toast.error("Batch not found for editing.");
     }
   };
-  
-  
+
+
   const handleModalClose = () => {
     setIsModalOpen(false);
     setNewBatch({
       id: 0,
       batchName: "",
-      shiftTime: "",
+      courseId: 0,
+      courseName: "",
+      traineeId: 0,
+      traineeName: "",
       startDate: "",
       endDate: "",
     });
@@ -170,7 +220,6 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 
   const handleFormSubmit = async () => {
     const token = getToken();
-
     if (!token) {
       toast.error("You must be logged in to perform this action.");
       return;
@@ -181,38 +230,36 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
       return; // Stop further execution if errors exist
     }
 
-    if (editing) {
-      if (!newBatch.id) {
-        console.error("Batch ID is missing for update.");
-        toast.error("Batch ID is missing.");
-        return;
-      }
+    const batchToSubmit = {
+      batchName: newBatch.batchName,
+      courseId: newBatch.courseId,
+      traineeId: newBatch.traineeId,
+      startDate: newBatch.startDate,
+      endDate: newBatch.endDate
+    };
 
-      try {
-        const updatedBatch = await updateBatchApi(newBatch.id, newBatch);
+    try {
 
-        console.log("updateBatch:", updatedBatch);
+      if (editing) {
+
+        const updatedBatch = await updateBatchApi(newBatch.id, batchToSubmit);
+        fetchBatchesData();
+
         setBatches((prev) =>
-          prev.map((batch) => (batch.id === newBatch.id ? updatedBatch : batch))
+          prev.map((batch) =>
+            batch.id === newBatch.id ? { ...batch, ...updatedBatch } : batch
+          )
         );
-
         toast.success("Batch updated successfully!");
-      } catch (error) {
-        console.error("Failed to update batch", error);
-        toast.error("Failed to update the batch. Please try again later.");
-      }
-    } else {
-      try {
-        const newBatchData = await createBatchApi(newBatch);
-        toast.success("Batch added successfully!");
+      } else {
+        const newBatchData = await createBatchApi(batchToSubmit);
+        fetchBatchesData();
         setBatches((prev) => [...prev, newBatchData]);
-      } catch (error) {
-        console.error("Failed to add batch", error);
-        toast.error("Failed to add the batch. Please try again later.");
+        toast.success("Batch added successfully!");
       }
+    } catch (error) {
+      toast.error("Failed to add the batch. Please try again later.");
     }
-
-    await fetchBatchesData();
     handleModalClose();
   };
 
@@ -225,8 +272,14 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         width: 200,
       },
       {
-        headerName: "Shift Time",
-        field: "shiftTime",
+        headerName: "Course Name",
+        field: "courseName",
+        editable: false,
+        width: 200,
+      },
+      {
+        headerName: "Trainee Name",
+        field: "traineeName",
         editable: false,
         width: 200,
       },
@@ -251,31 +304,30 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         headerName: "Actions",
         field: "actions",
         width: 200,
-        cellRenderer: (params: any) => (
-          <div className="flex space-x-2">
-            <Button
-              onClick={() => editBatch(params)}
-              className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
-            >
-              <Edit className="h-5 w-5" />
-            </Button>
-            <Button
-              onClick={() => confirmDelete(params)}
-              className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
-            >
-              <Trash className="h-5 w-5" />
-            </Button>
-          </div>
-        ),
+        cellRenderer: (params: any) => {
+          console.log("Editing batch data:", params.data);
+          return (
+            <div className="flex space-x-2">
+              <Button onClick={() => editBatch(params)} className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">
+                <Edit className="h-5 w-5" />
+              </Button>
+              <Button onClick={() => confirmDeleteBatch(params.data)} className="bg-red-500 text-white p-2 rounded hover:bg-red-700">
+                <Trash className="h-5 w-5" />
+              </Button>
+            </div>
+          );
+        },
         editable: false,
       },
     ]);
   }, [batches]);
 
-  const closeDeleteModal = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setDeleteModalOpen(false); // Close the delete modal
-    setBatchToDelete(null); // Clear the batch to delete
-  };
+  const uniqueCourse = Array.from(
+    new Map(batches.map((batch) => [batch.courseName, batch.courseId]))
+  );
+  const uniqueTrainees = Array.from(
+    new Map(batches.map((batch) => [batch.traineeName, batch.traineeId]))
+  );
 
   return (
     <div className="flex-1 p-4 mt-10 ml-24">
@@ -296,6 +348,38 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         </Button>
       </div>
 
+      {isDeleteModalOpen && batchToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
+            <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
+            <p className="mb-4 font-metropolis font-medium">
+              Are you sure you want to delete the Batch {" "}
+              <strong>
+                {batchToDelete?.batchName?.charAt(0).toUpperCase() +
+                  batchToDelete?.batchName?.slice(1).toLowerCase() || "this batchname"}
+              </strong>
+              ?
+            </p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button
+                onClick={handleCancelDelete}
+                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteBatch}
+                className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       <div
         className="ag-theme-quartz text-left"
         style={{ height: "calc(100vh - 180px)", width: "88%" }}
@@ -319,146 +403,138 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[900px] max-w-full">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
             <h2 className="text-xl font-metropolis font-semibold mb-4 text-center">
               {editing ? "Edit Batch" : "Add New Batch"}
             </h2>
             <form>
-              {/* Row for Batch Name and Shift Time */}
-              <div className="flex justify-between gap-4 mb-4">
-                <div className="flex-1">
-                  <label className="block font-metropolis font-medium mb-2">
-                    Batch Name
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                    value={newBatch.batchName}
-                    onChange={(e) =>
-                      setNewBatch({ ...newBatch, batchName: e.target.value })
-                    }
-                  />
-                  {errors.batchName && (
-                    <span className="text-red-500 text-sm">
-                      {errors.batchName}
-                    </span>
-                  )}
-                </div>
+              <div className="mb-4 mt-4">
+                <label className="block font-metropolis font-medium mb-2">
+                  Batch Name
+                </label>
+                <input
+                  type="text"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                  value={newBatch.batchName}
+                  onChange={(e) =>
+                    setNewBatch({ ...newBatch, batchName: e.target.value })
+                  }
+                />
+              </div>
 
-                <div className="flex-1">
-                  <label className="block font-metropolis font-medium mb-2">
-                    Shift Time
-                  </label>
-                  <input
-                    type="text"
-                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                    value={newBatch.shiftTime}
-                    onChange={(e) =>
-                      setNewBatch({ ...newBatch, shiftTime: e.target.value })
-                    }
-                  />
-                  {errors.shiftTime && (
-                    <span className="text-red-500 text-sm">
-                      {errors.shiftTime}
-                    </span>
+              <div className="mb-4">
+                <label className="block font-metropolis font-medium mb-2">
+                  Courses
+                </label>
+                <select
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                  value={newBatch.courseId}
+                  onChange={(e) =>
+                    setNewBatch({
+                      ...newBatch, courseId: parseInt(e.target.value),
+                      courseName:
+                        uniqueCourse.find(([_, id]) => id === parseInt(e.target.value))?.[0] || "",
+                    })
+                  }
+                >
+                  <option value="">Select Course</option>
+                  {course.map((course) => (
+                    <option key={course.courseName} value={course.id}>
+                      {course.courseName}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="mb-4">
+                <label className="block font-metropolis font-medium mb-2">
+                  Trainees
+                </label>
+                <select
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                  value={newBatch.traineeId}
+                  onChange={(e) =>
+                    setNewBatch({
+                      ...newBatch,
+                      traineeId: parseInt(e.target.value),
+                      traineeName:
+                        uniqueTrainees.find(([name, id]) => id === parseInt(e.target.value))
+                        ?.[0] || "", // Access name (first element of tuple)
+                    })
+                  }
+                >
+                  <option value="">Select Trainee</option>
+                  {Array.isArray(uniqueTrainees) && uniqueTrainees.length > 0 ? (
+                    uniqueTrainees.map(([traineeName, id]) => (
+                      <option key={id} value={id}>
+                        {traineeName}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No Trainees Available
+                    </option>
                   )}
-                </div>
+                </select>
               </div>
 
               {/* Row for Start Date and End Date */}
-              <div className="flex justify-between gap-4 mb-4">
-                <div className="flex-1">
-                  <label className="block font-metropolis font-medium mb-2">
-                    Start Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                    value={newBatch.startDate}
-                    onChange={(e) =>
-                      setNewBatch({ ...newBatch, startDate: e.target.value })
-                    }
-                  />
-                  {errors.startDate && (
-                    <span className="text-red-500 text-sm">
-                      {errors.startDate}
-                    </span>
-                  )}
-                </div>
+              <div className="mb-4">
+                <label className="block font-metropolis font-medium mb-2">
+                  Start Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                  value={newBatch.startDate}
+                  onChange={(e) =>
+                    setNewBatch({ ...newBatch, startDate: e.target.value })
+                  }
+                />
+                {errors.startDate && (
+                  <span className="text-red-500 text-sm">
+                    {errors.startDate}
+                  </span>
+                )}
+              </div>
 
-                <div className="flex-1">
-                  <label className="block font-metropolis font-medium mb-2">
-                    End Date
-                  </label>
-                  <input
-                    type="date"
-                    className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                    value={newBatch.endDate}
-                    onChange={(e) =>
-                      setNewBatch({ ...newBatch, endDate: e.target.value })
-                    }
-                  />
-                  {errors.endDate && (
-                    <span className="text-red-500 text-sm">
-                      {errors.endDate}
-                    </span>
-                  )}
-                </div>
+              <div className="mb-4">
+                <label className="block font-metropolis font-medium mb-2">
+                  End Date
+                </label>
+                <input
+                  type="date"
+                  className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
+                  value={newBatch.endDate}
+                  onChange={(e) =>
+                    setNewBatch({ ...newBatch, endDate: e.target.value })
+                  }
+                />
+                {errors.endDate && (
+                  <span className="text-red-500 text-sm">
+                    {errors.endDate}
+                  </span>
+                )}
               </div>
 
               {/* Action Buttons */}
-              <div className="flex justify-between">
+              <div className="flex space-x-4">
                 <Button
-                  type="button"
-                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
-             rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
+                  onClick={handleFormSubmit}
+                  className="bg-custom-gradient-btn text-white px-4 py-2 
+                transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
+                >
+                  {editing ? "Update Batch" : "Create Batch"}
+                </Button>
+                <Button
                   onClick={handleModalClose}
+                  className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
+               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="button"
-                  className="bg-custom-gradient-btn text-white px-4 py-2 
-            transition-all duration-500 ease-in-out 
-           rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
-                  onClick={handleFormSubmit}
-                >
-                  {editing ? "Update Batch" : "Add Batch"}
-                </Button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {deleteModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[400px] max-w-full">
-            <h2 className="text-xl font-metropolis font-semibold mb-4 text-center">
-              Confirm Deletion
-            </h2>
-            <p className="mb-4 text-center">
-              Are you sure you want to delete this batch?
-            </p>
-            <div className="flex gap-4 justify-end mt-5">
-              <Button
-                type="button"
-                className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
-               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
-                onClick={closeDeleteModal}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="button"
-                className="bg-custom-gradient-btn text-white px-4 py-2 
-                transition-all duration-500 ease-in-out 
-               rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
-                onClick={deleteBatchData}
-              >
-                Delete
-              </Button>
-            </div>
           </div>
         </div>
       )}
@@ -467,3 +543,4 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 };
 
 export default ManageBatches;
+

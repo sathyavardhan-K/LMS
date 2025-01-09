@@ -48,8 +48,6 @@ const AllUsers: React.FC = () => {
 
     try {
       const roleResponse = await fetchRolesApi();
-      console.log("roleResp", roleResponse);
-
       if (Array.isArray(roleResponse)) {
         const roleNames = roleResponse.map((role: { name: string }) => ({
           name: role.name,
@@ -89,7 +87,7 @@ const AllUsers: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen flex flex-col items-center">
+    <div className="p-6 min-h-screen flex flex-col items-center">
       <div className="flex justify-between items-center w-full max-w-[1170px] mb-4 mt-10">
         <h1 className="text-2xl font-bold text-gray-600">User Roles</h1>
         <button

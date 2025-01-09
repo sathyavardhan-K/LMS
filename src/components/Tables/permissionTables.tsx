@@ -68,7 +68,6 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
   const fetchPermissionsData = async () => {
     try {
       const permissionsData = await fetchPermissionsApi();
-      console.log("Fetched permissions:", permissionsData);
       setPermissions(permissionsData || []);
     } catch (error) {
       console.error("Failed to fetch permissions", error);
@@ -145,7 +144,6 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
     const permissionToEdit = permissions.find(
       (permission) => permission.action === data.data.action
     );
-    console.log("Permission to edit:", permissionToEdit);
     if (permissionToEdit) {
       setEditing(true);
       setNewPermission(permissionToEdit);
@@ -189,8 +187,6 @@ const ManagePermissions = ({ editable = true }: PermissionTableProps) => {
           newPermission.action,
           newPermission
         );
-
-        console.log("updatePermission:", updatedPermission);
         setPermissions((prev) =>
           prev.map((permission) =>
             permission.action === newPermission.action

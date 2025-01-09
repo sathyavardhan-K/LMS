@@ -82,16 +82,12 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Log the entire response data to examine its structure
-      console.log("Fetch Permission Response:", permissionResponse.data);
-
       // Check if the response is an array
       if (Array.isArray(permissionResponse.data)) {
         const permissionsData = permissionResponse.data.map((perm: any) => ({
           id: perm.id, // Ensure 'id' exists in the response
           action: perm.action, // Assuming 'action' exists in each permission
         }));
-        console.log(permissionsData, "permissiondata");
         setAvailablePermissions(permissionsData); // Now the data includes 'id' and 'action'
       } else {
         // If it's not an array, check if it's an object and handle accordingly
@@ -102,10 +98,8 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
               action: perm.action, // Assuming 'action' exists
             })
           );
-          console.log(permissionsData, "permissiondata");
           setAvailablePermissions(permissionsData); // Now the data includes 'id' and 'action'
         } else {
-          console.log("Invalid permissions data format");
           setAvailablePermissions([]);
         }
       }
@@ -230,16 +224,13 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
       ...newRole,
       permissions: newRole.permissions.map((perm) => perm.action),
     };
-    console.log("payload", payload);
 
     try {
       if (editing) {
         const updatedCategory = await updateRoleApi(newRole.id, payload);
-        console.log("updatedCategory", updatedCategory);
         toast.success("Role updated successfully!");
       } else {
         const newRoleData = await createRoleApi(payload);
-        console.log("Role with Permission Added", newRoleData);
         toast.success("Role added successfully!");
       }
       await fetchRoles();
@@ -404,15 +395,11 @@ const ManageRoles = ({ editable = true }: RoleTableProps) => {
                     );
 
                     // Log the selected actions for debugging
-                    console.log("Selected Actions:", selectedActions);
 
                     // Filter available permissions based on the selected actions
                     const selectedPermissions = availablePermissions.filter(
                       (perm) => selectedActions.includes(perm.action)
                     );
-
-                    // Log the selected permissions
-                    console.log("Selected Permissions:", selectedPermissions);
 
                     // Update the role's permissions state
                     setNewRole({

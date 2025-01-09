@@ -15,7 +15,8 @@ export const createCourseCategoryApi = async (newCategory: any) => {
 export const fetchCourseCategoryApi = async () => {
   try {
     const response = await apiClient.get('/coursecategory');
-    return response.data.category || [];
+    console.log('data', response)
+    return response.data.categories || [];
   } catch (error) {
     console.error('Failed to fetch course categories', error);
     throw error;

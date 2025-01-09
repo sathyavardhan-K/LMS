@@ -39,7 +39,6 @@ const AddUser = () => {
       }
       try {
         const roleResponse = await fetchRolesApi();
-        console.log("roleResponse", roleResponse);
         setRoles(roleResponse); // Store the roles
       } catch (error) {
         toast.error("Failed to load roles.");
@@ -108,9 +107,7 @@ const AddUser = () => {
     }
     const userData = { ...newUser };
     try {
-      const response = await createUserApi(userData);
-      console.log("Response for creating the new user", response);
- 
+      const response = await createUserApi(userData); 
       const createdUser = response.newUser;
  
       toast.success("User added successfully!");

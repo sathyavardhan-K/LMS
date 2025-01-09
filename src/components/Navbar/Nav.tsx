@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaBars } from "react-icons/fa";
-import { NavLink } from "react-router-dom";
 import { MdPersonAddAlt1 } from "react-icons/md";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuItem,
 } from "../ui/dropdown-menu";
 
 import ProfileSettingsIcon from "../../icons/setting.png";
 import LogoutIcon from "../../icons/logout.png";
-import TeqcertifyLogo from "../../images/teqcertify logo-black.png";
+
 
 interface NavProps {
   isAuthenticated: boolean;
@@ -20,7 +18,7 @@ interface NavProps {
 }
 
 const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
-  const [searchQuery, setSearchQuery] = useState("");
+  // const [searchQuery, setSearchQuery] = useState("");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -47,15 +45,15 @@ const Nav: React.FC<NavProps> = ({ isAuthenticated, setIsAuthenticated }) => {
   }, []);
 
   // Handle search input change
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-  };
+  // const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setSearchQuery(e.target.value);
+  // };
 
-  // Handle search form submission
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert(`Search for: ${searchQuery}`);
-  };
+  // // Handle search form submission
+  // const handleSearchSubmit = (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   alert(`Search for: ${searchQuery}`);
+  // };
 
   // Toggle the mobile menu
   const toggleMobileMenu = () => {
