@@ -87,7 +87,7 @@ const AllUsers: React.FC = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen flex flex-col items-center">
+    <div className="p-4 flex flex-col items-center">
       <div className="flex justify-between items-center w-full max-w-[1170px] mb-4 mt-10">
         <h1 className="text-2xl font-bold text-gray-600">User Roles</h1>
         <button

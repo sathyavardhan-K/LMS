@@ -23,6 +23,16 @@ export const fetchBatchApi = async () => {
   }
 };
 
+export const fetchBatchByIdApi = async (batchId: number) => {
+  try {
+    const response = await apiClient.get(`/batch/${batchId}`);
+    return response.data.Batches || [];
+  } catch (error) {
+    console.error('Failed to fetch batch by id', error);
+    throw error;
+  }
+};
+
 // Update an existing Batch
 export const updateBatchApi = async (id: number, updatedBatch: any) => {
   try {

@@ -99,17 +99,17 @@ const getToken = () => localStorage.getItem("authToken");
   
     try {
       const schedulesResponse = await fetchBatchModuleScheduleApi();
-      const schedules = schedulesResponse.map((schedule: { id: any; batchId: any; batch: { batchName: any; }; moduleId: any; module: { moduleName: any; }; trainerId: any; user: { firstName: any; lastName: any; }; scheduleDateTime: string | number | Date; duration: any; }) => ({
+      const schedules = schedulesResponse.map((schedule: { id: any; batchId: any; batch: { batchName: any; }; moduleId: any; module: { moduleName: any; }; trainerId: any; trainer: { firstName: any; lastName: any; }; scheduleDateTime: string | number | Date; duration: any; }) => ({
         id: schedule.id,
         batchId: schedule.batchId,
         batchName: schedule.batch?.batchName || "Unknown Batch",
         moduleId: schedule.moduleId,
         moduleName: schedule.module?.moduleName || "Unknown Module",
         trainerId: schedule.trainerId,
-        trainerName: `${schedule.user?.firstName} ${schedule.user?.lastName}` || "Unknown Trainer", // Safeguard with optional chaining
-        scheduleDateTime: typeof schedule.scheduleDateTime === "string"
-        ? schedule.scheduleDateTime.replace("T", " ").slice(0, 16) // Remove "T" and truncate after minutes
-        : schedule.scheduleDateTime,
+        trainerName: `${schedule.trainer?.firstName} ${schedule.trainer?.lastName}` || "Unknown Trainer", // Safeguard with optional chaining
+        scheduleDateTime: typeof schedule.scheduleDateTime === "string" 
+      ? schedule.scheduleDateTime.replace(".000Z", "") 
+      : schedule.scheduleDateTime,
         duration: schedule.duration,
       })); 
       
@@ -213,17 +213,17 @@ const getToken = () => localStorage.getItem("authToken");
       setScheduleToDelete(null);
     };
 
-  //   const formatDateForBackend = (data: any) => {
-  //     const newDate = new Date(data); // Convert to Date object
-  //     const year = newDate.getFullYear();
-  //     const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-  //     const day = String(newDate.getDate()).padStart(2, '0');
-  //     const hours = String(newDate.getHours()).padStart(2, '0');
-  //     const minutes = String(newDate.getMinutes()).padStart(2, '0');
-  //     const seconds = String(newDate.getSeconds()).padStart(2, '0'); // Add seconds
+    const formatDateForBackend = (data: any) => {
+      const newDate = new Date(data); // Convert to Date object
+      const year = newDate.getFullYear();
+      const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+      const day = String(newDate.getDate()).padStart(2, '0');
+      const hours = String(newDate.getHours()).padStart(2, '0');
+      const minutes = String(newDate.getMinutes()).padStart(2, '0');
+      const seconds = String(newDate.getSeconds()).padStart(2, '0'); // Add seconds
   
-  //     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // Format as "YYYY-MM-DD HH:mm:ss"
-  // }
+      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // Format as "YYYY-MM-DD HH:mm:ss"
+  }
 
     const handleEditSchedule = (data: any) => {
   const scheduleToEdit = schedules.find((schedule) => schedule.id === data.data.id);
@@ -283,7 +283,7 @@ const getToken = () => localStorage.getItem("authToken");
         trainerId: newSchedule.trainerId,
         scheduleDateTime: typeof newSchedule.scheduleDateTime === "string" 
       ? newSchedule.scheduleDateTime.replace(".000Z", "") 
-      : newSchedule.scheduleDateTime,
+      : formatDateForBackend(newSchedule.scheduleDateTime),
         duration: newSchedule.duration
       };
 
@@ -360,6 +360,11 @@ const getToken = () => localStorage.getItem("authToken");
     const uniquebatch = Array.from(
       new Map(schedules.map((schedule) => [schedule.batchName, schedule.batchId]))
     );
+    // const uniqueTrainer = Array.from(
+    //   new Map(trainers.map((schedule) => [schedule.trainerName, schedule.id]))
+    // );    
+
+    // console.log('uniquetraier', uniqueTrainer)
     
     const uniqueModule = Array.from(
       new Map(schedules.map((schedule) => [schedule.moduleName, schedule.moduleId]))

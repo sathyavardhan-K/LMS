@@ -216,7 +216,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       if (editing) {
 
         const updatedCourse = await updateCourseApi(newCourse.id, courseToSubmit);
-
         fetchCourses();
 
         setCourseData((prev) =>
@@ -280,7 +279,8 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
           <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Courses</h2>
           <p className="text-sm font-metropolis font-medium">Manage course easily.</p>
         </div>
-        <Button onClick={addNewRow} className="bg-yellow-400 text-gray-900 font-metropolis font-semibold ">
+        <Button onClick={addNewRow}
+         className="bg-yellow-400 text-gray-900 font-metropolis font-semibold px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500 transition duration-300">
           + New Course
         </Button>
       </div>

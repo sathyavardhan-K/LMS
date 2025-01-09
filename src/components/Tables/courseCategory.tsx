@@ -38,8 +38,10 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [viewingCategory, setViewingCategory] = useState<CourseCategoryData | null>(null);
-  const [categoryToDelete, setCategoryToDelete] = useState<CourseCategoryData | null>(null);
+  const [viewingCategory, setViewingCategory] =
+    useState<CourseCategoryData | null>(null);
+  const [categoryToDelete, setCategoryToDelete] =
+    useState<CourseCategoryData | null>(null);
   const [newCategory, setNewCategory] = useState<CourseCategoryData>({
     id: 0,
     courseCategory: "",
@@ -286,7 +288,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
         headerName: "Actions",
         field: "actions",
         cellRenderer: (params: any) => (
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
             <Button
               onClick={() => handleViewCategory(params.data)}
               className="bg-green-500 text-white p-2 rounded hover:bg-green-700"
@@ -350,7 +352,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
           animateRows
         />
       </div>
-      // View Modal
+    
       {viewingCategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -361,7 +363,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
               <label className="block font-metropolis font-medium">
                 Category Name
               </label>
-              <p className="font-metropolis text-gray-700 mt-1">
+              <p className="font-metropolis text-gray-700">
                 {viewingCategory.courseCategory}
               </p>
             </div>
@@ -381,7 +383,7 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
                 <img
                   src={viewingCategory.courseCategoryImg}
                   alt="Category"
-                  className="w-full h-40 object-cover rounded mt-2"
+                  className="w-full h-40 object-cover rounded"
                 />
               ) : (
                 <p className="text-gray-500">No Image</p>

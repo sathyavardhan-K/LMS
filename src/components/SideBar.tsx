@@ -11,6 +11,7 @@ import {
   ClipboardList,
   BookOpen,
   Calendar,
+  GraduationCap
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -19,8 +20,8 @@ const Sidebar: React.FC = () => {
   const location = useLocation(); // To determine the current active route
 
   return (
-    <div className="flex h-screen text-gray-700">
-      <div className="flex flex-col w-64 bg-purple-100 shadow-lg">
+    <div className="flex h-full min-h-0 text-gray-700">
+      <div className="flex flex-col w-80 bg-green-200 shadow-lg overflow-y-auto">
         <nav className="flex-1 p-4 space-y-2">
           {/* Admin Section with collapsible menu */}
           <button
@@ -56,7 +57,7 @@ const Sidebar: React.FC = () => {
 
             {/* Glow Effect (Optional Decoration) */}
             <div
-              className={`absolute inset-0 rounded-md bg-gradient-to-r from-blue-400 via-blue-500 to-purple-600 opacity-0 transition-opacity duration-300 ${
+              className={`absolute inset-0 rounded-md bg-custom-gradient opacity-0 transition-opacity duration-300 ${
                 isAdminOpen ? "opacity-20" : ""
               }`}
             ></div>
@@ -122,13 +123,34 @@ const Sidebar: React.FC = () => {
                 to="/admin/manage-batch-schedules"
                 isActive={location.pathname === "/admin/manage-batch-schedules"}
               />
+
+              <SidebarButton
+                icon={<GraduationCap />} // You can replace this with a different icon
+                label="Enrolled Courses"
+                to="/admin/enrolled-courses"
+                isActive={location.pathname === "/admin/enrolled-courses"}
+                />
+
+              <SidebarButton
+                icon={<BookOpen />}
+                label="Course Module"
+                to="/admin/course-module"
+                isActive={location.pathname === "/admin/course-module"}
+              />
+
+              <SidebarButton
+                icon={<Calendar />} // You can replace this with a different icon
+                label="Batch Module Schedules"
+                to="/admin/manage-batch-schedules"
+                isActive={location.pathname === "/admin/manage-batch-schedules"}
+              />
             </div>
           )}
         </nav>
       </div>
     </div>
-  );
-};
+  )
+}
 
 type SidebarButtonProps = {
   icon: React.ReactNode;
@@ -147,7 +169,7 @@ const SidebarButton: React.FC<SidebarButtonProps> = ({
     to={to}
     className={`group flex items-center gap-3 p-3 rounded-lg transition-all duration-300 ${
       isActive
-        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+        ? "bg-custom-gradient text-white shadow-md"
         : "bg-white hover:bg-gray-100 border border-gray-200"
     }`}
   >

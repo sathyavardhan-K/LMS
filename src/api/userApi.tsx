@@ -17,7 +17,7 @@ export const createUserApi = async (userData: any) => {
 export const fetchUsersApi = async()=>{
   try{
     const response = await apiClient.get('/users');
-    console.log('resp', response.data);
+    console.log('resp', response.data.Users);
     return response.data || [];
   } catch(error){
     console.error('Failed to fetch users', error);

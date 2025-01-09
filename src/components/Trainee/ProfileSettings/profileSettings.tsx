@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6
 import React, { useEffect, useState } from "react";
 import { fetchUsersbyIdApi, updateUserApi } from "../../../api/userApi"; // Import API functions
 import { toast } from "sonner";
@@ -141,7 +145,7 @@ const ProfileSettings: React.FC = () => {
 
   return (
     <div className="bg-white p-8 rounded-lg shadow-lg w-[1400px] mt-20 mb-20 font-metropolis ml-[140px]">
-      <div className="bg-settings-gradient p-16 rounded-lg">
+      <div className="bg-custom-gradient p-16 rounded-lg">
         <h2 className="text-2xl font-semibold text-center">Profile Settings</h2>
       </div>
 

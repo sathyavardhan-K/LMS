@@ -84,22 +84,22 @@ const CourseContent: React.FC = () => {
               {expandedTopic === course.title && (
                 <div className="pl-4 mt-2 space-y-2">
                   {course.subtopics.map((subtopic, subIndex) => (
-                    <div key={subIndex} className="flex justify-between p-2 rounded-md hover:bg-gray-100">
+                    <div
+                      key={subIndex}
+                      className="flex justify-between p-2 rounded-md hover:bg-gray-100"
+                    >
                       <span>{subtopic.title}</span>
                       <span className="text-gray-500">{subtopic.duration}</span>
                     </div>
                   ))}
                 </div>
               )}
+              
               <hr />
             </div>
           ))}
         </div>
       </aside>
-
-      
-
-      
     </div>
   );
 };
