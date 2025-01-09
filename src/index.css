@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Style the selected date with the custom color custom-calendar .rdp-day:hover */
+.custom-calendar .rdp-day.rdp-day_selected {
+ 
+  background-color: #7598D0; /* baby-powder color */
+  color: white; /* White text color */
+}
+
+.chart-size {
+  width: 220px;
+  height: 220px;
+}
+
+
 @layer base {
   :root {
     --background: 0 0% 100%;

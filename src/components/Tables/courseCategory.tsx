@@ -4,7 +4,7 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Edit, Trash } from "lucide-react";
+import { Edit, Trash, Eye } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import { ColDef } from "ag-grid-community";
 import {
@@ -13,7 +13,6 @@ import {
   createCourseCategoryApi,
   updateCourseCategoryApi,
 } from "@/api/courseCategoryApi";
-
 
 // TypeScript types for the component props
 interface CourseCategoryTableProps {
@@ -28,7 +27,6 @@ interface CourseCategoryData {
   courseCategoryImg: string;
 }
 
-
 const getToken = () => localStorage.getItem("authToken");
 
 const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
@@ -40,6 +38,8 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [viewingCategory, setViewingCategory] =
+    useState<CourseCategoryData | null>(null);
   const [categoryToDelete, setCategoryToDelete] =
     useState<CourseCategoryData | null>(null);
   const [newCategory, setNewCategory] = useState<CourseCategoryData>({
@@ -49,13 +49,15 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     courseCategoryImg: "",
   });
 
-
   const validateFields = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (!newCategory.courseCategory) newErrors.courseCategory = 'courseCategory is required.';
-    if (!newCategory.description) newErrors.description = 'description is required.';
-    if (!newCategory.courseCategoryImg) newErrors.courseCategoryImg = 'courseCategoryImg is required.';
+
+    if (!newCategory.courseCategory)
+      newErrors.courseCategory = "courseCategory is required.";
+    if (!newCategory.description)
+      newErrors.description = "description is required.";
+    if (!newCategory.courseCategoryImg)
+      newErrors.courseCategoryImg = "courseCategoryImg is required.";
 
     setErrors(newErrors);
 
@@ -64,33 +66,30 @@ const CourseCategoryTable = ({ editable = true }: CourseCategoryTableProps) => {
     });
 
     return newErrors;
-  }
+  };
 
+  // Convert file to base64 with prefix
+  const convertFileToBase64 = (file: File) => {
+    const reader = new FileReader();
+    return new Promise<string>((resolve, reject) => {
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file); // Convert file to base64 with prefix
+    });
+  };
 
- // Convert file to base64 with prefix
-const convertFileToBase64 = (file: File) => {
-  const reader = new FileReader();
-  return new Promise<string>((resolve, reject) => {
-    reader.onloadend = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file); // Convert file to base64 with prefix
-  });
-};
+  console.log(newCategory.courseCategoryImg);
 
-console.log(newCategory.courseCategoryImg); 
+  // When an image is dropped/uploaded
+  const onDrop = (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]; // Handle single file upload
+    setUploadedFile(file);
 
-
-// When an image is dropped/uploaded
-const onDrop = (acceptedFiles: File[]) => {
-  const file = acceptedFiles[0]; // Handle single file upload
-  setUploadedFile(file);
-
-  // Convert the file to base64
-  convertFileToBase64(file).then((base64) => {
-    setNewCategory({ ...newCategory, courseCategoryImg: base64 });
-  });
-};
-
+    // Convert the file to base64
+    convertFileToBase64(file).then((base64) => {
+      setNewCategory({ ...newCategory, courseCategoryImg: base64 });
+    });
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -101,14 +100,15 @@ const onDrop = (acceptedFiles: File[]) => {
   const fetchCourseCategoryData = async () => {
     try {
       const courseCategoryData = await fetchCourseCategoryApi();
-      const imageUrls = courseCategoryData
-        .map((category: { courseCategoryImg: string }) => {
+      const imageUrls = courseCategoryData.map(
+        (category: { courseCategoryImg: string }) => {
           if (category.courseCategoryImg) {
             // No need to convert base64, it can be used directly
-            return category.courseCategoryImg; 
+            return category.courseCategoryImg;
           }
           return null; // Handle missing images
-        });
+        }
+      );
 
       setCategoryData(
         courseCategoryData.map((category: any, index: string | number) => ({
@@ -130,7 +130,7 @@ const onDrop = (acceptedFiles: File[]) => {
 
   const addNewRow = () => {
     setEditing(false);
-    setUploadedFile(null)
+    setUploadedFile(null);
     setNewCategory({
       id: 0,
       courseCategory: "",
@@ -146,6 +146,13 @@ const onDrop = (acceptedFiles: File[]) => {
       setCategoryToDelete(category);
       setIsDeleteModalOpen(true);
     }
+  };
+
+  // Function to handle viewing a row
+  const handleViewCategory = (data: CourseCategoryData) => {
+    setViewingCategory(data); // Set the row data to state
+    setIsModalOpen(true); // Open the modal
+    setIsModalOpen(false); // Close the modal
   };
 
   const handleDeleteCategoryData = async () => {
@@ -204,7 +211,7 @@ const onDrop = (acceptedFiles: File[]) => {
     if (Object.keys(validationErrors).length > 0) {
       return; // Stop further execution if errors exist
     }
-  
+
     if (editing) {
       // Check if the newCategory.id is correctly set
       if (!newCategory.id) {
@@ -276,12 +283,18 @@ const onDrop = (acceptedFiles: File[]) => {
         editable: false,
         width: 320,
       },
-      
+
       {
         headerName: "Actions",
         field: "actions",
         cellRenderer: (params: any) => (
-          <div className="flex space-x-2">
+          <div className="flex space-x-4">
+            <Button
+              onClick={() => handleViewCategory(params.data)}
+              className="bg-green-500 text-white p-2 rounded hover:bg-green-700"
+            >
+              <Eye className="h-5 w-5" />
+            </Button>
             <Button
               onClick={() => editCategory(params.data)}
               className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
@@ -308,7 +321,9 @@ const onDrop = (acceptedFiles: File[]) => {
           <h2 className="text-2xl font-metropolis font-semibold tracking-wide">
             Course Categories
           </h2>
-          <p className="text-sm font-metropolis font-medium">Manage course categories easily.</p>
+          <p className="text-sm font-metropolis font-medium">
+            Manage course categories easily.
+          </p>
         </div>
         <Button
           onClick={addNewRow}
@@ -317,7 +332,6 @@ const onDrop = (acceptedFiles: File[]) => {
           + New Category
         </Button>
       </div>
-
       <div
         className="ag-theme-quartz text-left"
         style={{ height: "calc(100vh - 180px)", width: "88%" }}
@@ -338,11 +352,60 @@ const onDrop = (acceptedFiles: File[]) => {
           animateRows
         />
       </div>
-
+    
+      {viewingCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+            <h2 className="text-xl font-metropolis font-semibold mb-4">
+              View Category
+            </h2>
+            <div className="mb-4">
+              <label className="block font-metropolis font-medium">
+                Category Name
+              </label>
+              <p className="font-metropolis text-gray-700">
+                {viewingCategory.courseCategory}
+              </p>
+            </div>
+            <div className="mb-4">
+              <label className="block font-metropolis font-medium">
+                Description
+              </label>
+              <p className="font-metropolis text-gray-700">
+                {viewingCategory.description}
+              </p>
+            </div>
+            <div className="mb-4">
+              <label className="block font-metropolis font-medium">
+                Category Image
+              </label>
+              {viewingCategory.courseCategoryImg ? (
+                <img
+                  src={viewingCategory.courseCategoryImg}
+                  alt="Category"
+                  className="w-full h-40 object-cover rounded"
+                />
+              ) : (
+                <p className="text-gray-500">No Image</p>
+              )}
+            </div>
+            <div className="flex justify-end">
+              <Button
+                onClick={() => setViewingCategory(null)}
+                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
       {isDeleteModalOpen && categoryToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-auto">
-            <h2 className="text-xl font-metropolis font-semibold mb-4">Confirm Delete</h2>
+            <h2 className="text-xl font-metropolis font-semibold mb-4">
+              Confirm Delete
+            </h2>
             <p className="font-metropolis font-medium">
               Are you sure you want to delete the category{" "}
               <strong>
@@ -372,7 +435,6 @@ const onDrop = (acceptedFiles: File[]) => {
           </div>
         </div>
       )}
-
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
@@ -381,7 +443,9 @@ const onDrop = (acceptedFiles: File[]) => {
             </h2>
             <form>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Category Name</label>
+                <label className="block font-metropolis font-medium">
+                  Category Name
+                </label>
                 <input
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
@@ -395,7 +459,9 @@ const onDrop = (acceptedFiles: File[]) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Description</label>
+                <label className="block font-metropolis font-medium">
+                  Description
+                </label>
                 <input
                   type="text"
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
@@ -409,7 +475,9 @@ const onDrop = (acceptedFiles: File[]) => {
                 />
               </div>
               <div className="mb-4">
-                <label className="block font-metropolis font-medium">Category Image</label>
+                <label className="block font-metropolis font-medium">
+                  Category Image
+                </label>
                 <div
                   {...getRootProps()}
                   className={`border-2 border-dashed rounded p-4 mt-2 h-28 text-center cursor-pointer 
@@ -417,7 +485,9 @@ const onDrop = (acceptedFiles: File[]) => {
                 >
                   <input {...getInputProps()} />
                   {uploadedFile ? (
-                    <p className="text-green-600 font-metropolis font-semibold mt-6">{uploadedFile.name}</p>
+                    <p className="text-green-600 font-metropolis font-semibold mt-6">
+                      {uploadedFile.name}
+                    </p>
                   ) : (
                     <p className="text-gray-400 font-semibold">
                       Drag & drop a file here, or click to select one
@@ -447,8 +517,6 @@ const onDrop = (acceptedFiles: File[]) => {
         </div>
       )}
     </div>
-
-    
   );
 };
 

@@ -1,24 +1,37 @@
 import React from "react";
-import { HashRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Home from "./components/Home";
-import Nav from "./components/Navbar/Nav"; 
-import Footer from "./components/Trainee/Footer/Footer";
+import {
+  HashRouter as Router,
+  Route,
+  Routes,
+  Navigate,
+} from "react-router-dom";
 import { Toaster } from "sonner";
-import Dashboard from "./components/Dashboard";
+
+import Home from "./components/Home";
+import Nav from "./components/Navbar/Nav";
+import Footer from "./components/Trainee/Footer/Footer";
 import Login from "./components/Navbar/Login";
-import CourseTable from "./components/Tables/courseTables";
+import ProtectedRoute from "./components/protectedRoute";
+
+import Dashboard from "./components/Dashboard";
 import UserManagement from "./components/Tables/userManagement";
+import CourseTable from "./components/Tables/courseTables";
 import AddUser from "./components/Tables/addUser";
 import AllUsers from "./components/Tables/allUsers";
 import CourseCategoryTable from "./components/Tables/courseCategory";
 import ManageRoles from "./components/Tables/rolesTables";
 import PermissionRoles from "./components/Tables/permissionTables";
-import ProtectedRoute from "./components/protectedRoute";
+import BatchTable from "./components/Tables/batchTable";
+import CourseModuleTable from "./components/Tables/courseModule";
+import BatchModuleScheduleTable from "./components/Tables/manageBatchScheduleModule";
+
 import TraineeHome from "./components/Trainee/traineeHome";
 import UserSettings from "./components/Trainee/ProfileSettings/profileSettings";
-import CoursePage from "./components/Trainee/ProfilePage/CoursePage/coursePage";
+import CoursePage from "./components/Trainee/ProfilePage/EnrolledCourses/CoursePage/coursePage";
+import TraineeDashboard from "./components/Trainee/ProfilePage/Dashboard/DashboardPage/dashboardPage";
+
 import TrainerHelloWorld from "./components/Trainer/TrainerHelloWorld";
-import BatchTable from "./components/Tables/batchTable";
+import CodeExecutor from "./components/Trainee/ProfilePage/CodeChallenges/codeExecutor";
 
 interface AppRouterProps {
   isAuthenticated: boolean;
@@ -35,7 +48,7 @@ const AppRouter: React.FC<AppRouterProps> = ({
 }) => {
   return (
     <Router>
-        <Nav
+      <Nav
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
       />
@@ -52,9 +65,17 @@ const AppRouter: React.FC<AppRouterProps> = ({
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="courses" element={<CourseTable />} />
           <Route path="course-category" element={<CourseCategoryTable />} />
-          <Route path="manage-roles-and-permissions" element={<ManageRoles />} />
+          <Route
+            path="manage-roles-and-permissions"
+            element={<ManageRoles />}
+          />
           <Route path="manage-permissions" element={<PermissionRoles />} />
           <Route path="batch-management" element={<BatchTable />} />
+          <Route path="course-module" element={<CourseModuleTable />} />
+          <Route
+            path="manage-batch-schedules"
+            element={<BatchModuleScheduleTable />}
+          />
           <Route path="allUsers" element={<AllUsers />}>
             <Route path=":roleName" element={<UserManagement />} />
             <Route path="add-user" element={<AddUser />} />
@@ -71,6 +92,8 @@ const AppRouter: React.FC<AppRouterProps> = ({
           }
         >
           <Route path="courses" element={<CoursePage />} />
+          <Route path="dashboard" element={<TraineeDashboard />} />
+          <Route path="code-challenges" element={<CodeExecutor/>}/>
           <Route path="settings" element={<UserSettings />} />
         </Route>
 

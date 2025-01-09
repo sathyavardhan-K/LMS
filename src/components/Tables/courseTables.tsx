@@ -15,7 +15,7 @@ import {
 } from "@/api/courseApi"; 
 
 import { fetchCourseCategoryApi } from "@/api/courseCategoryApi";
-import { fetchUsersApi } from "@/api/userApi";
+// import { fetchUsersApi } from "@/api/userApi";
 
 // TypeScript types for the component props
 interface CourseTableProps {
@@ -28,20 +28,18 @@ interface CourseData {
   courseName: string;
   courseDesc: string;
   courseCategoryId: number;
-  courseInstructorId: number;
   courseCategory: string;
-  courseInstructor: string;
 }
 
-interface courseOptions {
+interface courseCategoryOptions {
   id: any;
   courseCategory: any;
 }
 
-interface instructorOptions{
-  id: any;
-  fullName: any;
-}
+// interface instructorOptions{
+//   id: any;
+//   fullName: any;
+// }
 
 // Helper to get the token from local storage
 const getToken = () => localStorage.getItem("authToken");
@@ -52,8 +50,8 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   const [colDefs, setColDefs] = useState<ColDef[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [courseCategory, setCourseCategory] = useState<courseOptions[]>([]);
-  const [instructor, setInstructor] = useState<instructorOptions[]>([]);
+  const [courseCategory, setCourseCategory] = useState<courseCategoryOptions[]>([]);
+  // const [instructor, setInstructor] = useState<instructorOptions[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [courseToDelete, setCourseToDelete] = useState< CourseData | null>(null);
@@ -62,9 +60,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     courseName: "",
     courseDesc: "",
     courseCategoryId: 0,
-    courseInstructorId: 0,
     courseCategory: "",
-    courseInstructor: "",
   });
 
   const validateFields = () => {
@@ -73,7 +69,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     if (!newCourse.courseName) newErrors.courseName = 'courseName is required.';
     if (!newCourse.courseDesc) newErrors.courseDesc = 'courseDesc is required.';
     if (!newCourse.courseCategoryId) newErrors.courseCategoryId = 'courseCategory is required.';
-    if (!newCourse.courseInstructorId) newErrors.courseInstructorId = 'courseInstructor is required.';
 
     setErrors(newErrors);
 
@@ -93,74 +88,22 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     }
 
     try {
-      // const response = await axios.get(`/course`, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // });
 
       const reponse = await fetchCourseApi();
-      console.log('course', reponse);
-
       const courses = reponse.map((course: any) => ({
         id: course.id,
         courseName: course.courseName,
         courseDesc: course.courseDesc,
         courseCategory: course.category?.courseCategory || "Unknown",
-        courseInstructor: course.instructor
-          ? `${course.instructor.firstName} ${course.instructor.lastName}`
-          : "Unknown Instructor",
         courseCategoryId: course.courseCategoryId || 0,
-        courseInstructorId: course.courseInstructorId || 0,
       }));
 
-      console.log('courses', courses);
-
-      // const responseCategory = await axios.get(`/coursecategory`, {
-      //   headers: {
-      //     Authorization: `Bearer ${token}`,
-      //   },
-      // })
-
       const responseCategory = await fetchCourseCategoryApi();
-      console.log('rescategory', responseCategory)
-
         const courseCategory = responseCategory.map((category: any)=>({
           id: category.id,
           courseCategory: category.courseCategory
         }));
-
-        console.log('courseCategory', courseCategory);
         setCourseCategory(courseCategory);
-
-        // const responseInstructor = await axios.get(`/users`,{
-        //   headers:{
-        //     Authorization: `Bearer ${token}`,
-        //   }
-        // })
-        // console.log('responseInstructor', responseInstructor.data);
-
-        const response = await fetchUsersApi(); // Wait for the Promise to resolve
-        const responseInstructor = response.Users; // Access the `Users` property
-
-        
-
-        const instructor = responseInstructor
-        .filter((user: any) => {
-          return (
-            Array.isArray(user.role)
-              ? user.role.some((r: any) => r.name.toLowerCase() === 'trainer')
-              : user.role && user.role.name.toLowerCase() === 'trainer'
-          );
-        })
-        .map((user: any) => ({
-          fullName: `${user.firstName} ${user.lastName}`,
-          id: user.id,  // Ensure you also include an id field
-        }));
-
-      console.log('Filtered Instructor (Trainer only):', instructor);
-      setInstructor(instructor);
-
 
       setCourseData(courses);
     } catch (error) {
@@ -183,9 +126,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       courseName: "",
       courseDesc: "",
       courseCategoryId: 0,
-      courseInstructorId: 0,
       courseCategory: "",
-      courseInstructor: "",
     });
     setIsModalOpen(true);
   };
@@ -199,8 +140,11 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     };  
   
     const handleDeleteCourse = async () => {
-        if (!courseToDelete) return;
-    
+        if (!courseToDelete) {
+          toast.error("No course Selected for deletion")
+          return;
+        }
+
         const token = getToken();
         if (!token) {
           toast.error("You must be logged in to delete a course.");
@@ -208,9 +152,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         }
     
         try {
-          // await axios.delete(`/course/${courseToDelete.id}`, {
-          //   headers: { Authorization: `Bearer ${token}` },
-          // });
 
           await deleteCourseApi(courseToDelete.id);
           
@@ -248,9 +189,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       courseName: "",
       courseDesc: "",
       courseCategoryId: 0,
-      courseInstructorId: 0,
       courseCategory: "",
-      courseInstructor: "",
     });
   };
 
@@ -271,22 +210,13 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     const courseToSubmit = {
       courseName: newCourse.courseName,
       courseDesc: newCourse.courseDesc,
-      courseCategoryId: newCourse.courseCategoryId,
-      courseInstructorId: newCourse.courseInstructorId,
+      courseCategoryId: newCourse.courseCategoryId
     };
-
-    console.log('courseToSubmit',courseToSubmit)
 
     try {
       if (editing) {
-        
-        // await axios.put(`/course/${newCourse.id}`, courseToSubmit, {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // });
 
         const updatedCourse = await updateCourseApi(newCourse.id, courseToSubmit);
-        console.log('updatedCourse', updatedCourse);
-
         fetchCourses();
 
         setCourseData((prev) =>
@@ -298,9 +228,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
         toast.success("Course updated successfully!");
 
       } else {
-        // const response = await axios.post(`/course`, courseToSubmit, {
-        //   headers: { Authorization: `Bearer ${token}` },
-        // });
 
         const newCourseData = await createCourseApi(courseToSubmit);
         fetchCourses();
@@ -319,10 +246,9 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   // Define column definitions for the grid
   useEffect(() => {
     setColDefs([
-      { headerName: "Course Name", field: "courseName", editable: false },
-      { headerName: "Description", field: "courseDesc", editable: false, width: 450 },
-      { headerName: "Category", field: "courseCategory", editable: false, width: 180 },
-      { headerName: "Instructor", field: "courseInstructor", editable: false, width: 180 },
+      { headerName: "Course Name", field: "courseName", editable: false, width: 220 },
+      { headerName: "Description", field: "courseDesc", editable: false, width: 550 },
+      { headerName: "Course Category", field: "courseCategory", editable: false, width: 250 },
       {
         headerName: "Actions",
         field: "actions",
@@ -345,9 +271,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   const uniqueCategories = Array.from(
     new Map(courseData.map((course) => [course.courseCategory, course.courseCategoryId]))
   );
-  const uniqueInstructors = Array.from(
-    new Map(courseData.map((course) => [course.courseInstructor, course.courseInstructorId]))
-  );
+
 
   return (
     <div className="flex-1 p-4 mt-10 ml-24">
@@ -356,7 +280,8 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
           <h2 className="text-2xl font-metropolis font-semibold tracking-wide">Courses</h2>
           <p className="text-sm font-metropolis font-medium">Manage course easily.</p>
         </div>
-        <Button onClick={addNewRow} className="bg-yellow-400 text-gray-900 font-metropolis font-semibold ">
+        <Button onClick={addNewRow}
+         className="bg-yellow-400 text-gray-900 font-metropolis font-semibold px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500 transition duration-300">
           + New Course
         </Button>
       </div>
@@ -450,28 +375,6 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                   ))}
                 </select>
               </div>
-              <div className="mb-4">
-                <label className="block font-metropolis font-medium">Instructor</label>
-                <select
-                  className="w-full border rounded p-2 font-metropolis text-gray-400 font-semibold"
-                  value={newCourse.courseInstructorId}
-                  onChange={(e) =>
-                    setNewCourse({
-                      ...newCourse,
-                      courseInstructorId: parseInt(e.target.value, 10),
-                      courseInstructor:
-                        uniqueInstructors.find(([_, id]) => id === parseInt(e.target.value, 10))?.[0] || "",
-                    })
-                  }
-                >
-                  <option value="">Select Instructor</option>
-                  {instructor.map((inst) => (
-                    <option key={inst.id} value={inst.id}>
-                      {inst.fullName}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div className="flex space-x-4">
                 <Button
                   onClick={handleFormSubmit}
@@ -479,7 +382,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
                 transition-all duration-500 ease-in-out 
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
-                  {editing ? "Update" : "Create"}
+                  {editing ? "Update Course" : "Create Course"}
                 </Button>
                 <Button
                   onClick={handleModalClose}
