@@ -44,8 +44,4 @@ export const deleteCourseModuleApi = async (id: number) => {
     console.error('Failed to delete course module', error);
     throw error;
   }
-<<<<<<< HEAD
 };
-=======
-};
->>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6

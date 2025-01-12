@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6
 import React, { useEffect, useState } from "react";
 import { fetchUsersbyIdApi, updateUserApi } from "../../../api/userApi"; // Import API functions
 import { toast } from "sonner";

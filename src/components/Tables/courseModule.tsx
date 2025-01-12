@@ -420,3 +420,243 @@ const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
 };
 
 export default CourseModuleTable;
+
+// import { useState, useEffect } from "react";
+// import { Button } from "../../components/ui/button";
+// import { toast } from "sonner";
+// import { Edit, Trash } from "lucide-react";
+// import { fetchCourseApi } from "@/api/courseApi";
+// import { createCourseModuleApi, fetchCourseModuleApi, updateCourseModuleApi } from "@/api/courseModuleApi";
+
+// interface CourseModuleTableProps {
+//   editable?: boolean;
+// }
+
+// interface CourseModuleData {
+//   id: number;
+//   courseId: number;
+//   moduleName: string;
+//   moduleDescription: string;
+//   courseName?: string;
+// }
+
+// interface CourseOption {
+//   id: number;
+//   courseName: string;
+// }
+
+// const CourseModuleTable = ({ editable = true }: CourseModuleTableProps) => {
+//   const [courseModules, setCourseModules] = useState<CourseModuleData[]>([]);
+//   const [courseOptions, setCourseOptions] = useState<CourseOption[]>([]);
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [editing, setEditing] = useState(false);
+//   const [selectedModule, setSelectedModule] = useState<CourseModuleData | null>(
+//     null
+//   );
+//   const [newModule, setNewModule] = useState<CourseModuleData>({
+//     id: 0,
+//     courseId: 0,
+//     moduleName: "",
+//     moduleDescription: "",
+//   });
+
+//   const fetchCourseModules = async () => {
+//     try {
+//       const courses = await fetchCourseApi(); // Replace with actual API call
+//       setCourseOptions(courses);
+//       const modules = await fetchCourseModuleApi(); // Replace with actual API call
+//       setCourseModules(modules);
+//     } catch (error) {
+//       toast.error("Failed to fetch data.");
+//     }
+//   };
+
+//   useEffect(() => {
+//     fetchCourseModules();
+//   }, []);
+
+//   const openModal = (module?: CourseModuleData) => {
+//     if (module) {
+//       setSelectedModule(module);
+//       setNewModule(module);
+//       setEditing(true);
+//     } else {
+//       setNewModule({
+//         id: 0,
+//         courseId: 0,
+//         moduleName: "",
+//         moduleDescription: "",
+//       });
+//       setEditing(false);
+//     }
+//     setIsModalOpen(true);
+//   };
+
+//   const closeModal = () => {
+//     setIsModalOpen(false);
+//     setNewModule({
+//       id: 0,
+//       courseId: 0,
+//       moduleName: "",
+//       moduleDescription: "",
+//     });
+//   };
+
+//   const handleFormSubmit = async () => {
+//     try {
+//       if (editing && selectedModule) {
+//         // Update module
+//         await updateCourseModuleApi(selectedModule.id, newModule); // Replace with actual API
+//         toast.success("Module updated successfully!");
+//       } else {
+//         // Create new module
+//         await createCourseModuleApi(newModule); // Replace with actual API
+//         toast.success("Module added successfully!");
+//       }
+//       fetchCourseModules();
+//       closeModal();
+//     } catch (error) {
+//       toast.error("Failed to save module.");
+//     }
+//   };
+
+  
+
+//   return (
+//     <div className="p-4 mt-10 ml-24">
+//       <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6">
+//         <h2 className="text-2xl font-semibold">Course Modules</h2>
+//         <Button
+//           onClick={() => openModal()}
+//           className="bg-yellow-400 text-gray-900 px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500"
+//         >
+//           + New Module
+//         </Button>
+//       </div>
+
+//       <div className="overflow-x-auto bg-white rounded-lg shadow-lg">
+//         <table className="table-auto w-full border-collapse border border-gray-200">
+//           <thead className="bg-gray-100">
+//             <tr>
+//               <th className="border border-gray-300 px-4 py-2 text-left">
+//                 Course Name
+//               </th>
+//               <th className="border border-gray-300 px-4 py-2 text-left">
+//                 Module Name
+//               </th>
+//               <th className="border border-gray-300 px-4 py-2 text-left">
+//                 Description
+//               </th>
+//               <th className="border border-gray-300 px-4 py-2 text-center">
+//                 Actions
+//               </th>
+//             </tr>
+//           </thead>
+//           <tbody>
+//             {courseModules.map((module) => (
+//               <tr key={module.id} className="hover:bg-gray-100">
+//                 <td className="border border-gray-300 px-4 py-2">
+//                   {module.courseName}
+//                 </td>
+//                 <td className="border border-gray-300 px-4 py-2">
+//                   {module.moduleName}
+//                 </td>
+//                 <td className="border border-gray-300 px-4 py-2">
+//                   {module.moduleDescription}
+//                 </td>
+//                 <td className="border border-gray-300 px-4 py-2 text-center">
+//                   <div className="flex justify-center space-x-2">
+//                     <Button
+//                       onClick={() => openModal(module)}
+//                       className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+//                     >
+//                       <Edit className="h-5 w-4" />
+//                     </Button>
+//                     <Button
+//                       onClick={() => toast.error("Delete functionality not implemented")}
+//                       className="bg-red-500 text-white p-2 rounded hover:bg-red-700"
+//                     >
+//                       <Trash className="h-5 w-4" />
+//                     </Button>
+//                   </div>
+//                 </td>
+//               </tr>
+//             ))}
+//           </tbody>
+//         </table>
+//       </div>
+
+//       {isModalOpen && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//           <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+//             <h2 className="text-xl font-semibold mb-4 text-center">
+//               {editing ? "Edit Module" : "Add New Module"}
+//             </h2>
+//             <form>
+//               <div className="mb-4">
+//                 <label className="block font-medium mb-2">Course</label>
+//                 <select
+//                   className="w-full border rounded p-2"
+//                   value={newModule.courseId}
+//                   onChange={(e) =>
+//                     setNewModule({
+//                       ...newModule,
+//                       courseId: parseInt(e.target.value, 10),
+//                     })
+//                   }
+//                 >
+//                   <option value="">Select Course</option>
+//                   {courseOptions.map((course) => (
+//                     <option key={course.id} value={course.id}>
+//                       {course.courseName}
+//                     </option>
+//                   ))}
+//                 </select>
+//               </div>
+//               <div className="mb-4">
+//                 <label className="block font-medium mb-2">Module Name</label>
+//                 <input
+//                   type="text"
+//                   className="w-full border rounded p-2"
+//                   value={newModule.moduleName}
+//                   onChange={(e) =>
+//                     setNewModule({ ...newModule, moduleName: e.target.value })
+//                   }
+//                 />
+//               </div>
+//               <div className="mb-4">
+//                 <label className="block font-medium mb-2">Description</label>
+//                 <textarea
+//                   className="w-full border rounded p-2"
+//                   value={newModule.moduleDescription}
+//                   onChange={(e) =>
+//                     setNewModule({
+//                       ...newModule,
+//                       moduleDescription: e.target.value,
+//                     })
+//                   }
+//                 />
+//               </div>
+//               <div className="flex justify-end space-x-4">
+//                 <Button
+//                   onClick={handleFormSubmit}
+//                   className="bg-blue-500 text-white px-4 py-2 rounded"
+//                 >
+//                   {editing ? "Update" : "Create"}
+//                 </Button>
+//                 <Button
+//                   onClick={closeModal}
+//                   className="bg-red-500 text-white px-4 py-2 rounded"
+//                 >
+//                   Cancel
+//                 </Button>
+//               </div>
+//             </form>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default CourseModuleTable;

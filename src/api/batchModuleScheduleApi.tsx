@@ -15,13 +15,8 @@ export const createBatchModuleScheduleApi = async (newBatchModuleSchedule: any) 
 export const fetchBatchModuleScheduleApi = async () => {
   try {
     const response = await apiClient.get('/batchModuleSchedule');
-<<<<<<< HEAD
-    console.log('response', response.data.batchModuleSchedule);
-    return response.data.batchModuleSchedule || [];
-=======
-    console.log('response', response.data.data);
-    return response.data.data || [];
->>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6
+    console.log('responseschedule', response.data);
+    return response.data;
   } catch (error) {
     console.error('Failed to fetch course module', error);
     throw error;
@@ -33,11 +28,7 @@ export const updateBatchModuleScheduleApi = async (id: number, newBatchModuleSch
   try {
     console.log('updatedCourseModule', newBatchModuleSchedule);
     const response = await apiClient.put(`/batchModuleSchedule/${id}`, newBatchModuleSchedule);
-<<<<<<< HEAD
     console.log('response', response.data);
-=======
-    console.log('response batch module', response.data.data);
->>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6
     return response.data;
   } catch (error) {
     console.error('Error updating course module', error);
@@ -54,8 +45,4 @@ export const deleteBatchModuleScheduleApi = async (id: number) => {
     console.error('Failed to delete course module', error);
     throw error;
   }
-<<<<<<< HEAD
-};
-=======
-};
->>>>>>> 18a96ced52c2973ba4c2022cbc1b897d1775c9a6
+}

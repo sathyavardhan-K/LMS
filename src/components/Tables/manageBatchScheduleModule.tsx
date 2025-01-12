@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { AgGridReact } from "ag-grid-react";
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-quartz.css";
-import React, { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Edit, Trash } from "lucide-react";
 import { ColDef } from "ag-grid-community";
@@ -35,8 +35,6 @@ interface ScheduleData {
 }
 
 interface Options {
-  firstName: ReactNode;
-  lastName: ReactNode;
   id: any;
   batchName: any;
   moduleName: any;
@@ -71,24 +69,6 @@ const getToken = () => localStorage.getItem("authToken");
     duration: 0,
   });
 
-  // const validateFields = () => {
-  //   const newErrors: Record<string, string> = {};
-
-  //   if (!newSchedule.batchName) newErrors.batchId = "Batch name is required.";
-  //   if (!newSchedule.moduleName) newErrors.moduleId = "Module name is required.";
-  //   if (!newSchedule.trainerName) newErrors.trainerId = "trainer name is required.";
-  //   if (!newSchedule.scheduleDateTime) newErrors.scheduleDateTime = "schedule date is required.";
-  //   if (!newSchedule.duration) newErrors.duration = "duration is required.";
-
-  //   setErrors(newErrors);
-
-  //   Object.entries(newErrors).forEach(([field, message]) => {
-  //     toast.error(`${field}: ${message}`);
-  //   });
-
-  //   return newErrors;
-  // };
-
   const fetchSchedules = async () => {
     const token = getToken();
     if (!token) {
@@ -96,25 +76,29 @@ const getToken = () => localStorage.getItem("authToken");
       return;
     }
 
-  
     try {
-      const schedulesResponse = await fetchBatchModuleScheduleApi();
-      const schedules = schedulesResponse.map((schedule: { id: any; batchId: any; batch: { batchName: any; }; moduleId: any; module: { moduleName: any; }; trainerId: any; trainer: { firstName: any; lastName: any; }; scheduleDateTime: string | number | Date; duration: any; }) => ({
-        id: schedule.id,
-        batchId: schedule.batchId,
-        batchName: schedule.batch?.batchName || "Unknown Batch",
-        moduleId: schedule.moduleId,
-        moduleName: schedule.module?.moduleName || "Unknown Module",
-        trainerId: schedule.trainerId,
-        trainerName: `${schedule.trainer?.firstName} ${schedule.trainer?.lastName}` || "Unknown Trainer", // Safeguard with optional chaining
-        scheduleDateTime: typeof schedule.scheduleDateTime === "string" 
-      ? schedule.scheduleDateTime.replace(".000Z", "") 
-      : schedule.scheduleDateTime,
-        duration: schedule.duration,
-      })); 
+      const schedulesResponse = await fetchBatchModuleScheduleApi();    
+      // Extract the data array
+      const schedulesData = schedulesResponse?.data || [];
       
-
-      console.log('schedules data', schedules)
+      // Safeguard with Array.isArray
+      const schedules = Array.isArray(schedulesData)
+        ? schedulesData.map((schedule: any) => ({
+            id: schedule.id,
+            batchId: schedule.batch?.id || 0,
+            batchName: schedule.batch?.batchName || "Unknown Batch",
+            moduleId: schedule.module?.id || 0,
+            moduleName: schedule.module?.moduleName || "Unknown Module",
+            trainerName: schedule.trainer? schedule.trainer.map((trainer:any) =>
+             `${trainer.firstName} ${trainer.lastName}`).join(", ") : "Unknown Trainer",
+            scheduleDateTime: typeof schedule.scheduleDateTime === "string" 
+              ? schedule.scheduleDateTime.replace(".000Z", "") 
+              : schedule.scheduleDateTime,
+            duration: schedule.duration,
+          }))
+        : [];
+    
+      console.log('Parsed schedules:', schedules);
   
       const batchResponse = await fetchBatchApi();
       const batches = batchResponse.map((batch: { id: any; batchName: any; }) => ({
@@ -131,17 +115,13 @@ const getToken = () => localStorage.getItem("authToken");
       setModules(modules);
   
         const responseUser = await fetchUsersApi();
-        console.log("Trainers API Response:", responseUser);
         const trainers = responseUser.Users.filter(
           (user: any) => user.role.name === "trainer"
-        );
-
-        if (Array.isArray(trainers)) {
-          setTrainers(trainers);
-        } else {
-          toast.error("Failed to load trainers.");
-        }
-
+        ).map((trainer:any) => ({
+          id: trainer.id,
+          trainerName: `${trainer.firstName} ${trainer.lastName}`
+        }));
+        setTrainers(trainers);
         setSchedules(schedules);
 
       } catch (error) {
@@ -490,7 +470,7 @@ const getToken = () => localStorage.getItem("authToken");
                 {/* Trainer Selector */}
                 <div className="mb-4">
                   <label className="block font-metropolis font-medium mb-2">
-                    Trainer Name
+                    Trainers
                   </label>
                   <select
                     value={newSchedule.trainerId || ""}
@@ -511,7 +491,7 @@ const getToken = () => localStorage.getItem("authToken");
                         <option value="">Select a trainer</option>
                         {trainers.map((trainer) => (
                           <option key={trainer.id} value={trainer.id}>
-                            {trainer.firstName} {trainer.lastName}
+                            {trainer.trainerName}
                           </option>
                         ))}
                       </>

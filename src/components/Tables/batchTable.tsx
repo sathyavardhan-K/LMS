@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 import { Button } from "../../components/ui/button";
 import "react-day-picker/dist/style.css";
 import { toast } from "sonner";
@@ -85,7 +85,6 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     return newErrors;
   };
 
-  // Fetch batches
   const fetchBatchesData = async () => {
     const token = getToken();
     if (!token) {
@@ -95,34 +94,46 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
 
     try {
       const response = await fetchBatchApi();
-
       const batches = response.map((batch: any) => ({
         id: batch.id,
         batchName: batch.batchName,
-        courseId: batch.courseId || 0,
-        courseName: batch.course?.courseName || "Unknown", // This provides the course name
-        traineeId: batch.traineeId || 0,
-        traineeName: `${batch.trainee.firstName} ${batch.trainee.lastName}` || 'Unknown',
+        courseId: batch.course?.id || 0,
+        courseName: batch.course?.courseName || "Unknown", // Course Name
+        traineeName: batch.trainees
+          ? batch.trainees
+            .map((trainee: any) => `${trainee.firstName} ${trainee.lastName}`)
+            .join(", ")
+          : "Unknown",
         startDate: batch.startDate,
         endDate: batch.endDate,
       }));
 
+      
       const responseCourse = await fetchCourseApi();
       const courses = responseCourse.map((course: any) => ({
         id: course.id,
-        courseName: course.courseName
+        courseName: course.courseName,
       }));
-      setCourse(courses)
+      setCourse(courses);
 
       const responseUser = await fetchUsersApi();
-      setTraineeName(responseUser)
-      setBatches(batches)
+      const trainees = responseUser.Users.filter(
+        (user: any) => user.role.name === "trainee"
+      ).map((trainee: any) => ({
+        id: trainee.id,
+        traineeName: `${trainee.firstName} ${trainee.lastName}`, // Full Name
+      }));
+      setTraineeName(trainees);
+
+      setBatches(batches);
     } catch (error) {
-      toast.error("Failed to fetch batches. Please try again later.");
+      console.error("Error fetching or processing users:", error);
+      toast.error("Failed to fetch data.");
     } finally {
       setLoading(false);
     }
   };
+
 
   useEffect(() => {
     fetchBatchesData();
@@ -325,9 +336,6 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
   const uniqueCourse = Array.from(
     new Map(batches.map((batch) => [batch.courseName, batch.courseId]))
   );
-  const uniqueTrainees = Array.from(
-    new Map(batches.map((batch) => [batch.traineeName, batch.traineeId]))
-  );
 
   return (
     <div className="flex-1 p-4 mt-10 ml-24">
@@ -457,25 +465,20 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
                       ...newBatch,
                       traineeId: parseInt(e.target.value),
                       traineeName:
-                        uniqueTrainees.find(([name, id]) => id === parseInt(e.target.value))
-                        ?.[0] || "", // Access name (first element of tuple)
+                        traineeName.find((trainee) => trainee.id === parseInt(e.target.value))
+                          ?.traineeName || "",
                     })
                   }
                 >
                   <option value="">Select Trainee</option>
-                  {Array.isArray(uniqueTrainees) && uniqueTrainees.length > 0 ? (
-                    uniqueTrainees.map(([traineeName, id]) => (
-                      <option key={id} value={id}>
-                        {traineeName}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No Trainees Available
+                  {traineeName.map((trainee) => (
+                    <option key={trainee.id} value={trainee.id}>
+                      {trainee.traineeName}
                     </option>
-                  )}
+                  ))}
                 </select>
               </div>
+
 
               {/* Row for Start Date and End Date */}
               <div className="mb-4">
@@ -525,13 +528,13 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
                   {editing ? "Update Batch" : "Create Batch"}
-                </Button> 
+                </Button>
                 <Button
                   onClick={handleModalClose}
                   className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
-                  {editing ? "Update Batch" : "Create Batch"}
+                 Cancel
                 </Button>
               </div>
             </form>
