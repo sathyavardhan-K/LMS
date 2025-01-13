@@ -27,11 +27,12 @@ interface BatchData {
   batchName: string;
   courseId: number;
   courseName: string;
-  traineeId: number;
-  traineeName: string;
+  traineeId: number[]; // Changed to array
+  traineeName: string[]; // Changed to array
   startDate: string;
   endDate: string;
 }
+
 
 interface batchOptions {
   id: any;
@@ -60,8 +61,8 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     batchName: "",
     courseId: 0,
     courseName: "",
-    traineeId: 0,
-    traineeName: "",
+    traineeId: [],
+    traineeName: [],
     startDate: "",
     endDate: "",
   });
@@ -108,7 +109,7 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         endDate: batch.endDate,
       }));
 
-      
+
       const responseCourse = await fetchCourseApi();
       const courses = responseCourse.map((course: any) => ({
         id: course.id,
@@ -146,8 +147,8 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
       batchName: "",
       courseId: 0,
       courseName: "",
-      traineeId: 0,
-      traineeName: "",
+      traineeId: [],
+      traineeName: [],
       startDate: "",
       endDate: "",
     });
@@ -222,8 +223,8 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
       batchName: "",
       courseId: 0,
       courseName: "",
-      traineeId: 0,
-      traineeName: "",
+      traineeId: [],
+      traineeName: [],
       startDate: "",
       endDate: "",
     });
@@ -244,9 +245,9 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
     const batchToSubmit = {
       batchName: newBatch.batchName,
       courseId: newBatch.courseId,
-      traineeId: newBatch.traineeId,
+      traineeIds: newBatch.traineeId, // Send as an array
       startDate: newBatch.startDate,
-      endDate: newBatch.endDate
+      endDate: newBatch.endDate,
     };
 
     try {
@@ -289,7 +290,7 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
         width: 200,
       },
       {
-        headerName: "Trainee Name",
+        headerName: "Trainee Names",
         field: "traineeName",
         editable: false,
         width: 200,
@@ -458,25 +459,24 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
                   Trainees
                 </label>
                 <select
+                  multiple
                   className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
-                  value={newBatch.traineeId}
-                  onChange={(e) =>
-                    setNewBatch({
-                      ...newBatch,
-                      traineeId: parseInt(e.target.value),
-                      traineeName:
-                        traineeName.find((trainee) => trainee.id === parseInt(e.target.value))
-                          ?.traineeName || "",
-                    })
-                  }
+                  value={(newBatch.traineeId || []).map((id) => id.toString())} // Guard against undefined
+                  onChange={(e) => {
+                    const selectedOptions = Array.from(e.target.selectedOptions);
+                    const ids = selectedOptions.map((option) => parseInt(option.value)); // Convert back to number[]
+                    const names = selectedOptions.map((option) => option.text);
+                    setNewBatch({ ...newBatch, traineeId: ids, traineeName: names });
+                  }}
                 >
-                  <option value="">Select Trainee</option>
-                  {traineeName.map((trainee) => (
-                    <option key={trainee.id} value={trainee.id}>
+                  <option value="">Select Trainees</option>
+                  {(traineeName || []).map((trainee) => (
+                    <option key={trainee.id} value={trainee.id.toString()}>
                       {trainee.traineeName}
                     </option>
                   ))}
                 </select>
+
               </div>
 
 
@@ -534,7 +534,7 @@ const ManageBatches = ({ editable = true }: BatchTableProps) => {
                   className="bg-red-500 text-white hover:bg-red-600 px-4 py-2 transition-all duration-500 ease-in-out 
                rounded-tl-3xl hover:rounded-tr-none hover:rounded-br-none hover:rounded-bl-none hover:rounded"
                 >
-                 Cancel
+                  Cancel
                 </Button>
               </div>
             </form>

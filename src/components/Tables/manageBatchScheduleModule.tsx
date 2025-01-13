@@ -28,8 +28,8 @@ interface ScheduleData {
   batchName: string;
   moduleId: number;
   moduleName: string;
-  trainerId: number;
-  trainerName: string;
+  trainerId: number[];
+  trainerName: string[];
   scheduleDateTime: string;
   duration: number;
 }
@@ -63,8 +63,8 @@ const getToken = () => localStorage.getItem("authToken");
     batchName: "",
     moduleId: 0,
     moduleName: "",
-    trainerId: 0,
-    trainerName: "",
+    trainerId: [],
+    trainerName: [],
     scheduleDateTime: "",
     duration: 0,
   });
@@ -89,8 +89,8 @@ const getToken = () => localStorage.getItem("authToken");
             batchName: schedule.batch?.batchName || "Unknown Batch",
             moduleId: schedule.module?.id || 0,
             moduleName: schedule.module?.moduleName || "Unknown Module",
-            trainerName: schedule.trainer? schedule.trainer.map((trainer:any) =>
-             `${trainer.firstName} ${trainer.lastName}`).join(", ") : "Unknown Trainer",
+            trainerName: schedule.trainers? schedule.trainers.map((trainers:any) =>
+             `${trainers.firstName} ${trainers.lastName}`).join(", ") : "Unknown Trainer",
             scheduleDateTime: typeof schedule.scheduleDateTime === "string" 
               ? schedule.scheduleDateTime.replace(".000Z", "") 
               : schedule.scheduleDateTime,
@@ -144,8 +144,8 @@ const getToken = () => localStorage.getItem("authToken");
         batchName: "",
         moduleId: 0,
         moduleName: "",
-        trainerId: 0,
-        trainerName: "",
+        trainerId: [],
+        trainerName: [],
         scheduleDateTime: "",
         duration: 0,
       });
@@ -180,7 +180,6 @@ const getToken = () => localStorage.getItem("authToken");
         toast.success("Schedule deleted successfully!");
         fetchSchedules();
       } catch (error) {
-        console.error("Failed to delete schedule", error);
         toast.error("Failed to delete schedule. Please try again later.");
       } finally {
         setDeleteModalOpen(false);
@@ -193,17 +192,17 @@ const getToken = () => localStorage.getItem("authToken");
       setScheduleToDelete(null);
     };
 
-    const formatDateForBackend = (data: any) => {
-      const newDate = new Date(data); // Convert to Date object
-      const year = newDate.getFullYear();
-      const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
-      const day = String(newDate.getDate()).padStart(2, '0');
-      const hours = String(newDate.getHours()).padStart(2, '0');
-      const minutes = String(newDate.getMinutes()).padStart(2, '0');
-      const seconds = String(newDate.getSeconds()).padStart(2, '0'); // Add seconds
+  //   const formatDateForBackend = (data: any) => {
+  //     const newDate = new Date(data); // Convert to Date object
+  //     const year = newDate.getFullYear();
+  //     const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+  //     const day = String(newDate.getDate()).padStart(2, '0');
+  //     const hours = String(newDate.getHours()).padStart(2, '0');
+  //     const minutes = String(newDate.getMinutes()).padStart(2, '0');
+  //     // const seconds = String(newDate.getSeconds()).padStart(2, '0'); // Add seconds
   
-      return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`; // Format as "YYYY-MM-DD HH:mm:ss"
-  }
+  //     return `${year}-${month}-${day} ${hours}:${minutes}`; // Format as "YYYY-MM-DD HH:mm:ss"
+  // }
 
     const handleEditSchedule = (data: any) => {
   const scheduleToEdit = schedules.find((schedule) => schedule.id === data.data.id);
@@ -238,8 +237,8 @@ const getToken = () => localStorage.getItem("authToken");
         batchName: "",
         moduleId: 0,
         moduleName: "",
-        trainerId: 0,
-        trainerName: "",
+        trainerId: [],
+        trainerName: [],
         scheduleDateTime: "",
         duration: 0,
       });
@@ -260,25 +259,19 @@ const getToken = () => localStorage.getItem("authToken");
       const scheduleToSubmit = {
         batchId: newSchedule.batchId,
         moduleId: newSchedule.moduleId,
-        trainerId: newSchedule.trainerId,
+        trainerIds: newSchedule.trainerId,
         scheduleDateTime: typeof newSchedule.scheduleDateTime === "string" 
-      ? newSchedule.scheduleDateTime.replace(".000Z", "") 
-      : formatDateForBackend(newSchedule.scheduleDateTime),
+              ? newSchedule.scheduleDateTime.replace(".000Z", "") 
+              : newSchedule.scheduleDateTime,
         duration: newSchedule.duration
       };
 
-      // console.log('scheduletosubmit', scheduleToSubmit);
-      // console.log('duration', newSchedule.duration);
-
-      console.log('newSchedule', newSchedule);
       console.log('scheduleToSubmit', scheduleToSubmit);
 
       try {
         if (editing) {
           const updateSchedule = await updateBatchModuleScheduleApi(newSchedule.id, scheduleToSubmit);
           console.log('updateSchedule', updateSchedule)
-          console.log("newSchedule", newSchedule)
-          console.log('scheduleToSubmit', scheduleToSubmit)
 
           fetchSchedules();
 
@@ -340,11 +333,6 @@ const getToken = () => localStorage.getItem("authToken");
     const uniquebatch = Array.from(
       new Map(schedules.map((schedule) => [schedule.batchName, schedule.batchId]))
     );
-    // const uniqueTrainer = Array.from(
-    //   new Map(trainers.map((schedule) => [schedule.trainerName, schedule.id]))
-    // );    
-
-    // console.log('uniquetraier', uniqueTrainer)
     
     const uniqueModule = Array.from(
       new Map(schedules.map((schedule) => [schedule.moduleName, schedule.moduleId]))
@@ -473,24 +461,27 @@ const getToken = () => localStorage.getItem("authToken");
                     Trainers
                   </label>
                   <select
-                    value={newSchedule.trainerId || ""}
-                    onChange={(e) =>
+                  multiple
+                    value={(newSchedule.trainerId || []).map((id) => id.toString())}
+                    onChange={(e) => {
+                      const selectedOptions = Array.from(e.target.selectedOptions);
+                      const ids = selectedOptions.map((option) => parseInt(option.value));
+                      const names = selectedOptions.map((option) => option.text);
                       setNewSchedule({
                         ...newSchedule,
-                        trainerId: parseInt(e.target.value),
-                        trainerName: 
-                          trainers.find((trainer) => trainer.id === parseInt(e.target.value))?.trainerName || "",
-                    })                      
-                    }
+                        trainerId: ids,
+                        trainerName: names
+                    });                      
+                    }}
                     className="w-full border rounded font-metropolis p-2 text-gray-400 font-semibold"
                   >
                     {trainers.length === 0 ? (
                       <option value="">No trainers available</option>
                     ) : (
                       <>
-                        <option value="">Select a trainer</option>
-                        {trainers.map((trainer) => (
-                          <option key={trainer.id} value={trainer.id}>
+                        <option value="">Select a Trainers</option>
+                        {(trainers || []).map((trainer) => (
+                          <option key={trainer.id} value={trainer.id.toString()}>
                             {trainer.trainerName}
                           </option>
                         ))}
