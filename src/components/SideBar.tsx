@@ -116,7 +116,7 @@ const Sidebar: React.FC = () => {
 
                 <SidebarButton
                   icon={<MountainSnow />}
-                  label="Manage Permissions"
+                  label="Permissions"
                   to="/admin/manage-permissions"
                   isActive={location.pathname === "/admin/manage-permissions"}
                 />

@@ -401,10 +401,11 @@
 
 // export default CourseTable;
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import { Button } from "../../components/ui/button";
 import { toast } from "sonner";
-import { Edit, Trash } from "lucide-react";
+import { ChevronDown, Pencil } from "lucide-react";
+
 import {
   createCourseApi,
   fetchCourseApi,
@@ -438,6 +439,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [editing, setEditing] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [newCourse, setNewCourse] = useState<CourseData>({
     id: 0,
     courseName: "",
@@ -445,7 +447,21 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     courseCategoryId: 0,
     courseCategory: "",
   });
+  const [currentPage, setCurrentPage] = useState(1);
 
+  {/* pagination */ }
+  const recordsPerPage = 15;
+  const totalPages = Math.ceil(courseData.length / recordsPerPage);
+  const startIndex = (currentPage - 1) * recordsPerPage;
+  const currentData = courseData.slice(startIndex, startIndex + recordsPerPage);
+
+  const handlePageChange = (newPage: SetStateAction<number>) => {
+    setCurrentPage(newPage);
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
   // Fetch courses and categories
   const fetchCourses = async () => {
@@ -546,11 +562,7 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
     }
   };
 
-  // const editCourse = (course: CourseData) => {
-  //   setEditing(true);
-  //   setNewCourse(course);
-  //   setIsModalOpen(true);
-  // };
+  //Delete course
   const handleDeleteCourse = async () => {
     try {
       await deleteCourseApi(newCourse.id);
@@ -561,39 +573,58 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
       toast.error("Failed to delete the course.");
     }
   };
-  
 
 
   return (
-    <div className="flex-1 p-4 mt-10 ml-24">
-      <div className="flex items-center justify-between bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-[1147px]">
-        <h2 className="text-2xl font-metropolis font-semibold">Courses</h2>
-        <select
-          className="bg-yellow-400 text-gray-900 font-metropolis font-semibold px-5 py-2 rounded-md shadow-lg hover:bg-yellow-500 transition duration-300"
-          onChange={(e) => {
-            const selectedId = e.target.value;
-            if (selectedId === "newCourse") {
-              addNewRow();
-            } else {
-              const selectedCourse = courseData.find((course) => course.id.toString() === selectedId);
-              if (selectedCourse) editCourse(selectedCourse);
-            }
-          }}
-          defaultValue=""
+    <div className="flex-1 p-6 mt-10 ml-16">
+      <div className="relative bg-custom-gradient text-white px-6 py-4 rounded-lg shadow-lg mb-6 w-full">
+        {/* Dropdown Button */}
+        <Button
+          className="w-80 flex justify-between items-center px-4 py-2 border bg-yellow-400"
+          onClick={toggleDropdown}
         >
-          <option value="">Courses</option>
-          <option value="newCourse">+ New Course</option>
-          {courseData.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.courseName}
-            </option>
-          ))}
-        </select>
+          Courses
+          <ChevronDown className="ml-2 h-5 w-5" />
+        </Button>
+
+        {/* Dropdown Menu */}
+        {isDropdownOpen && (
+          <ul className="absolute w-80 border bg-white z-10 mt-1 max-h-48 overflow-auto shadow-lg text-black">
+            {/* Add New Course Option */}
+            <li
+              className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              onClick={() => {
+                addNewRow()
+                setIsModalOpen(true);
+                setIsDropdownOpen(false);
+              }}
+            >
+              + New Course
+            </li>
+
+            {/* Course List with Edit Icons */}
+            {courseData.map((course) => (
+              <li
+                key={course.id}
+                className="flex justify-between items-center px-4 py-2 hover:bg-gray-100"
+              >
+                <span>{course.courseName}</span>
+                <Pencil
+                  className="h-4 w-4 text-blue-500 cursor-pointer"
+                  onClick={() => {
+                    editCourse(course);
+                    setIsDropdownOpen(false);
+                  }}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      <table className="table-auto w-full mt-4 border-collapse border border-gray-300">
+      <table className="table-auto w-full mt-4 border-collapse border border-gray-300 shadow-lg">
         <thead>
-          <tr className="bg-gray-200">
+          <tr className="bg-gray-200 text-left text-gray-800">
             <th className="border border-gray-300 px-4 py-2">Name</th>
             <th className="border border-gray-300 px-4 py-2">Description</th>
             <th className="border border-gray-300 px-4 py-2">Category</th>
@@ -601,29 +632,52 @@ const CourseTable = ({ editable = true }: CourseTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {courseData.map((course) => (
-            <tr key={course.id}>
+          {currentData.map((course) => (
+            <tr key={course.id} className="hover:bg-gray-100">
               <td className="border border-gray-300 px-4 py-2">{course.courseName}</td>
               <td className="border border-gray-300 px-4 py-2">{course.courseDesc}</td>
               <td className="border border-gray-300 px-4 py-2">{course.courseCategory}</td>
-              {/* <td className="border border-gray-300 px-4 py-2">
+              {/* <td className="border border-gray-300 px-4 py-2 flex space-x-2">
                 <button
                   onClick={() => editCourse(course)}
-                  className="text-blue-500 mr-2"
+                  className="text-blue-500 hover:text-blue-700"
                 >
-                  <Edit className="inline-block w-4 h-4" />
+                  <Edit className="inline-block w-5 h-5" />
                 </button>
                 <button
                   onClick={() => deleteCourse(course.id)}
-                  className="text-red-500"
+                  className="text-red-500 hover:text-red-700"
                 >
-                  <Trash className="inline-block w-4 h-4" />
+                  <Trash className="inline-block w-5 h-5" />
                 </button>
               </td> */}
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Pagination Controls */}
+      <div className="flex justify-center items-center mt-4">
+        <button
+          disabled={currentPage === 1}
+          onClick={() => handlePageChange(currentPage - 1)}
+          className={`px-4 py-2 rounded-l-md border bg-gray-300 text-gray-700 hover:bg-gray-400 ${currentPage === 1 && "cursor-not-allowed opacity-50"
+            }`}
+        >
+          Previous
+        </button>
+        <span className="px-4 py-2 border-t border-b text-gray-700">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          disabled={currentPage === totalPages}
+          onClick={() => handlePageChange(currentPage + 1)}
+          className={`px-4 py-2 rounded-r-md border bg-gray-300 text-gray-700 hover:bg-gray-400 ${currentPage === totalPages && "cursor-not-allowed opacity-50"
+            }`}
+        >
+          Next
+        </button>
+      </div>
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
